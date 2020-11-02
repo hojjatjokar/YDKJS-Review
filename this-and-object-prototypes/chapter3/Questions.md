@@ -252,3 +252,29 @@ for (let k in myObject) {
 95. What's difference between **keys()** and getOwnPropertyNames?
 96. Is there built-in way to get a list of all properties which equivalent to what the **in** operator test would consult? how you can get manually?
 97. for ... in ?
+98. Iterating over the values typically done with a standard for loop in arrays?
+99. Difference between forEach, every(...), some()?
+100.    **for...of**? How it works?
+101.
+
+```javascript
+var myArray = [1, 2, 3];
+for (var v of myArray) {
+    console.log(v);
+}
+```
+
+102.
+
+```javascript
+var myArray = [1, 2, 3];
+var it = myArray[Symbol.iterator]();
+it.next(); // { value: ?, done: ? }
+it.next(); // { value: ?, doen: ? }
+it.next(); // ?
+it.next(); // ?
+it.next(); // ?
+```
+
+103. **@@iterator**?
+104. The return value from an iterator's **next()** call is what? What includes?
