@@ -86,3 +86,58 @@ var b = new Foo("b");
 a.myName();
 b.myName();
 ```
+
+26.
+
+```javascript
+function foo() {}
+Foo.prototype = {};
+var a1 = new Foo(); // ?
+a1.constructor === Foo; // ?
+a1.constructor === Object; // ?
+```
+
+    - Explain code?
+    - How it end up to delegate to object constructor?
+
+27. The words "constructor" and "prototype" only have a what meaning? loose default meaning? why?
+28. Explain
+
+```javascript
+function Foo(name) {
+    this.name = name;
+}
+Foo.prototype.myName = function () {
+    return this.name;
+};
+function Bar(name, lable) {
+    Foo.call(this, name);
+    this.label = lable;
+}
+Bar.prototype = Object.create(Foo.prototype);
+Bar.prototype.myLabel = function () {
+    return this.lable;
+};
+var a = new Bar("a", "obj a");
+a.myName();
+a.myLabel();
+```
+
+29. How to find out an object delegates to what object?
+30. Prototypal inheritance soloutions? pros and cons?
+
+    -   Bar.prototype = Foo.prototype;
+    -   Bar.prototype = new Foo();
+    -   Object.create()
+    -   Object.setPrototypeOf()
+
+31. Introspection (or reflection)?
+32. instanceof ?
+33. isPrototypeOf()
+34. getPrototypeOf()
+35. **proto**?
+    -   What is it?
+    -   It exists where?
+    -   It's property or getter/setter?
+36. What's [[prototype]] mechanism?
+37. When [[prototype]] linkage exercise?
