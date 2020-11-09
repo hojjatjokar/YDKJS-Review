@@ -83,3 +83,60 @@ JSON.Parse("-0"); // ?
 41. How to distinguish -0 from 0 ?
 42. Why do we need a negative zero?
 43. Object.is() ?
+44.
+
+```javascript
+var a = 2 / "foo";
+var b = -3 * 0;
+Object.is(a, NaN); // ?
+Object.is(b, -0); // ?
+Object.is(b, 0); // ?
+```
+
+45. When to use **Object.is()** and when not to use?
+46.
+
+```javascript
+var a = 2;
+var b = a;
+b++;
+a; // ?
+b; // ?
+```
+
+47.
+
+```javascript
+var c = [1, 2, 3];
+var d = c;
+d.push(4);
+c; // ?
+d; // ?
+```
+
+48.
+
+```javascript
+var a = [1, 2, 3];
+var b = a;
+a; // ?
+b; // ?
+b = [4, 5, 6];
+a; // ?
+b; // ?
+```
+
+49.
+
+```javascript
+function foo(x) {
+    x.push(4);
+    x; // ?
+    x = [4, 5, 6];
+    x.push(7);
+    x; // ?
+}
+var a = [1, 2, 3];
+foo(a);
+a; // ?
+```
