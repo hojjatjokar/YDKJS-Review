@@ -4,31 +4,22 @@
 
 1. Chapter 1: What is scope?
     - [Questions](scope-closures/chapter1/Questions.md)
-    - Examples
     - Notes
-    - Interview questions
-    - Articles
 2. Chapter 2:
     - [Questions](scope-closures/chapter2/Questions.md)
-    - Examples
     - Notes
-    - Interview questions
-    - Articles
 3. Chapter 3:
     - [Questions](scope-closures/chapter3/Questions.md)
-    - Examples
     - Notes
-    - Interview questions
-    - Articles
 4. Chapter 4:
-    - Questions
-    - Examples
+    - [Questions](scope-closures/chapter4/Questions.md)
     - Notes
-    - Interview questions
-    - Articles
 5. Chapter 5:
-    - Questions
+    - [Questions](scope-closures/chapter5/Questions.md)
     - Examples
     - Notes
-    - Interview questions
-    - Articles
+
+### Extra:
+
+-   [Review Questions](scope-closures/ReviewQuestions.md)
+-   [Articles](scope-closures/Articles.md)
