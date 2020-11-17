@@ -5,6 +5,7 @@
 1. Chapter 1: What is scope?
     - [Questions](scope-closures/chapter1/Questions.md)
     - Notes
+    - [Examoles](scope-closures/chapter1/Examples.md)
 2. Chapter 2:
     - [Questions](scope-closures/chapter2/Questions.md)
     - Notes
