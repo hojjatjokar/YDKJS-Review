@@ -1,0 +1,5 @@
+1. [Scope From Functions](https://jsfiddle.net/paintthedream/0g8qph4d/)
+2. [Hiding In Plain Scope](https://jsfiddle.net/paintthedream/m73v6t4f/)
+3. [Collision Avoidance](https://jsfiddle.net/paintthedream/h851s962/)
+4. [Global Namespaces](https://jsfiddle.net/paintthedream/1hquro83/)
+5. [IIFE](https://jsfiddle.net/paintthedream/2p9wgd5k/3/)
