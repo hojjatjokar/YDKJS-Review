@@ -48,3 +48,37 @@ a.toString();
     });
 
 21. toJSON? What's it usage? What's it return?
+22. Explain
+
+```javascript
+    var o = {};
+    var a = {
+        b: 42,
+        c: o,
+        d: fn(){}
+    }
+    o.e = a;
+    a.toJSON = function(){
+        return {
+            b: this.b,
+        };
+    }
+    JSON.stringify(a);
+```
+
+23. What's second argument for **JSON.stringify()**?
+24. What's third parameter for JSON.stringify()?
+25. How JSON.stringify() and ToString is related?
+26. What's ToNumber abstract value operation?
+27. What's ToNumber define these values become to number?
+    -   true
+    -   false
+    -   undefined
+    -   null
+28. ToNumber for a string value, how it works?
+    -   How it works?
+    -   If fails, What's result?
+    -   0-prefixed value?
+29. ToNumber abstract value operation for objects(and arrray)?
+30. ToPrimitive abstract operation?
+31. How to create non coercible object?
