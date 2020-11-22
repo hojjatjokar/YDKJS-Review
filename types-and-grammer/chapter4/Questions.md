@@ -82,3 +82,56 @@ a.toString();
 29. ToNumber abstract value operation for objects(and arrray)?
 30. ToPrimitive abstract operation?
 31. How to create non coercible object?
+32. Consider:
+
+```javascript
+var a = {
+    valueOf: function () {
+        return 42;
+    },
+};
+var b = {
+    toString: function () {
+        return "42";
+    },
+};
+var c = [4, 2];
+c.toString = function () {
+    return this.join("");
+};
+```
+
+    - Number(a);
+    - Number(b);
+    - Number(c);
+    - Number("");
+    - Number([]);
+    - Number(["abc"]);
+
+33. Javascript values can be divided into two categories?
+34. What's ToBottom abstract operation?
+35. falsy values?
+36. truthy values?
+37. falsy objects?
+38. Consider:
+
+```javascript
+var a = "false";
+var b = "0";
+var c = "''";
+var d = Boolean(a && b && c);
+d;
+```
+
+39. Consider:
+
+```javascript
+var a = [];
+var b = {};
+var c = function () {};
+var d = Boolean(a && b && c);
+d; // ?
+```
+
+40. Goal of explicit coercion?
+41. To coerce between strings and number we use what? explicitly (5)
