@@ -135,3 +135,68 @@ d; // ?
 
 40. Goal of explicit coercion?
 41. To coerce between strings and number we use what? explicitly (5)
+42. String(...)
+
+    -   Coerce from what values to what value?
+    -   Using which rules?
+
+43. Number(..)
+
+    -   Coerce from what values to what value?
+    -   Using what rule?
+
+44. Explain?
+
+```javascript
+var a = 42;
+var b = a.toString();
+var c = "3.14";
+var d = +c;
+b;
+c;
+```
+
+45. **.toString** explicit or implicit? explain?
+46. **+** unary operator is explicit or implicit? explain?
+47. **-** unary operator? explicit or implicit? explain?
+48. Usage of **+** unary operator to coerce Date?
+49. Best way to get Date to number?
+50. **~** operator?
+51. How to explicitly parsing Numeric strings?
+52. Explain?
+
+```javascript
+var a = "42";
+var b = "42px";
+Number(a); // ?
+parseInt(a); // ?
+Number(b); // ?
+parseInt(b); // ?
+```
+
+53. parseInt? It operate on what value?
+54. If you pass non-string to parseInt what will happen?
+55. second parameter of parseInt?
+56. Explain?
+
+```javascript
+parseInt(1 / 0, 19);
+```
+
+57. Explain?
+
+```javascript
+parseInt(new String("42"));
+```
+
+58. Explain?
+
+```javascript
+var a = {
+    num: 21,
+    toString: function () {
+        return String(this.num * 2);
+    },
+};
+parseInt(a);
+```
