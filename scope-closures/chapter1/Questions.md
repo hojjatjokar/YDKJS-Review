@@ -1,22 +1,29 @@
 # Chapter 1
 
 1.  ### What's code compilation?
+
     Code compilation is a set of steps that process the text of your code and
     turn it into a list of instructions the computer can understand. Typically,
     the whole source code is transformed at once, and those resulting
     instructions are saved as output (usually in a file) that can later be
     executed.
+
 2.  ### What's Interpretation, and how is it different from code compilation?
+
     Interpretation performs a similar task to the compilation, in that it
     transforms your program into machine-understandable instructions. But the
     processing model is different. Unlike a program being compiled all at once,
     with the interpretation the source code is transformed line by line; each
     line or statement is executed before immediately proceeding to processing
     the next line of the source code.
+
 3.  ### Why does it even matter whether JS is compiled or not?
+
     Scope is primarily determined during compilation, so understanding how
     compilation and execution relate is key in mastering scope.
+
 4.  ### What are the basic stages that a program is processed by a compiler?
+
     1. **Tokenizing/Lexing:** breaking up a string of characters into meaningful
        (to the language) chunks, called tokens.
     2. **Parsing:** taking a stream (array) of tokens and turning it into a tree
@@ -25,10 +32,13 @@
     3. **Code Generation:** taking an AST and turning it into executable code.
        This part varies greatly depending on the language, the platform it's
        targeting, and other factors.
+
 5.  ### Explain what happens to this code snippet in those each steps from previous question?
+
     ```
         var a = 2;
     ```
+
     1. This program would likely be broken up into the following
        tokens: `var`, `a`, `=`, `2`, and `;`. Whitespace may or may not be
        persisted as a token, depending on whether it's meaningful or not.
@@ -40,39 +50,51 @@
     3. The JS engine takes the just described AST for `var a = 2;` and turns it
        into a set of machine instructions to actually create a variable called
        `a` (including reserving memory, etc.), and then stores a value into a.
+
 6.  ### What's difference between tokenizing and lexing?
+
     The difference between tokenizing and lexing is subtle and academic, but it
     centers on whether or not these tokens are identified in
     a stateless or stateful way. Put simply, if the tokenizer were to invoke
     stateful parsing rules to figure out whether `a` should be considered a
     distinct token or just part of another token, that would be lexing.)
+
 7.  ### What else the JS engine will do beside this three steps?
+
     The JS engine is vastly more complex than just these three stages. In the
     process of parsing and code generation, there are steps to optimize the
     performance of the execution (i.e., collapsing redundant elements). In fact,
     code can even be re-compiled and re-optimized during the progression of
     execution.
+
 8.  ### When is JS compilation happens?
+
     JS compilation doesn't happen in a build step ahead of time, as with other
     languages. It usually must happen in mere microseconds (or less!) right
     before the code is executed.
+
 9.  ### What JS engine will do for performance optimizations?
+
     JS engines don't have the luxury of an abundance of time to perform their
     work and optimizations. To ensure the fastest performance under these
     constraints, JS engines use all kinds of tricks (like JITs, which lazy
     compile and even hot re-compile); these are well beyond the "scope" of our
     discussion here.
+
 10. ### Which steps has processing of JS programs?
 
     Processing of JS programs is that it occurs in (at least) two phases: 1.
     Parsing/compilation 2. Then execution
 
 11. ### What are characteristics to prove JS has compilation step?
+
     There are three program characteristics you can observe to prove this to
     yourself:
+
     - Syntax errors
     - Early errors
     - Hoisting
+
 12. ### How syntax errors can spot that JS has compilation phase?
 
     ```
@@ -162,19 +184,25 @@
     Zone (TDZ).
 
 15. ### What roles occurrences of variables/identifiers in a program serve?
+
     All occurrences of variables/identifiers in a program serve in one of two
     "roles": either they're the target of an assignment or they're the source of
     a value.
+
 16. ### What are LHS and RHS?
+
     "LHS" (aka, target) and "RHS" (aka, source). As you might guess from the "L"
     and the "R", the acronyms mean "Left-Hand Side" and "Right-Hand Side", as in
     left and right sides of an = assignment operator. However, assignment
     targets and sources don't always literally appear on the left or right of an
     =, so it's probably clearer to think in terms of target/source rather than
     left / right.
+
 17. ### How do you know if a variable is a target or source?
+
     Check if there is a value that is being assigned to it; if so, it's a
     target. If not, then the variable is a source.
+
 18. ### Spot targets and sources in this snippet of codes?
 
     ```
@@ -208,16 +236,21 @@
     - `with` keyword
 
 20. ### What's best practice to cheating lexical scope?
+
     Neither of these techniques should be used—they're both dangerous and
     confusing, and you should be using strict-mode (where they're disallowed)
     anyway. But it's important to be aware of them in case you run across them
     in some programs.
+
 21. ### How eval() function cheat lexical scope?
+
     The eval(..) function receives a string of code to compile and execute on
     the fly during the program runtime. If that string of code has a var or
     function declaration in it, those declarations will modify the current scope
-    that the eval(..) is currently executing in:
+    that the eval(..) is currently executing in
+
 22. ### Explain this snippet of code?
+
     ```
         function badIdea() {
             eval("var oops = 'Ugh!';");
@@ -225,11 +258,13 @@
         }
         badIdea();   // Ugh!
     ```
+
     If the eval(..) had not been present, the oops variable in console.log(oops)
     would not exist, and would throw a ReferenceError. But eval(..) modifies the
     scope of the badIdea() function at runtime. This is bad for many reasons,
     including the performance hit of modifying the already compiled and
     optimized scope, every time badIdea() runs.
+
 23. ### How with cheat lexical scope?
 
     The second cheat is the with keyword, which essentially dynamically turns an
@@ -258,9 +293,11 @@
     compilation.
 
 26. ### What's the key idea of lexical scope?
+
     the key idea of "lexical scope" is that it's controlled entirely by the
     placement of functions, blocks, and variable declarations, in relation to
     one another.
+
 27. ### What's function scope and block scope?
 
     If you place a variable declaration inside a function, the compiler handles
@@ -287,6 +324,7 @@
     been executed yet.
 
 30. ### How compilation handle scope for program execution?
+
     Instead, compilation creates a map of all the lexical scopes that lays out
     what the program will need while it executes. You can think of this plan as
     inserted code for use at runtime, which defines all the scopes (aka,
