@@ -1,121 +1,211 @@
 # Chapter 2
 
-1. ### What scope models are there? Javascript has which one?
+1. ### When scope bubbles determined and based on where?
 
-   There are two predominant models for how scope works. Lexical scope and
-   Dynamic scope.
+   Scope bubbles are determined during compilation based on where the
+   functions/blocks of scope are written, the nesting inside each other, and so
+   on.
 
-2. ### What's lexing?
+2. ### Can a scope be in two outer scope? Where each scope bubble contained?
 
-   The first traditional phase of a standard language compiler is called lexing
-   (aka, tokenizing). The lexing process examines a string of source code
-   characters and assigns semantic meaning to the tokens as a result of some
-   stateful parsing.
+   Each scope bubble is entirely contained within its parent scope bubble—a
+   scope is never partially in two different outer scopes.
 
-3. ### What's lexical scope?
+3. ### When the JS engine determine scope buckets?
 
-   Lexical scope is scope that is defined at lexing time. In other words,
-   lexical scope is based on where variables and blocks of scope are authored,
-   by you, at write time, and thus is (mostly) set in stone by the time the
-   lexer processes your code.
+   The JS engine doesn't generally determine these marble colors during runtime;
+   the "lookup" here is a rhetorical device to help you understand the concepts.
+   During compilation, most or all variable references will match already-known
+   scope buckets, so their color is already determined, and stored with each
+   marble reference to avoid unnecessary lookups as the program runs.
 
-4. ### Highlight scopes?
+4. ### What are The members of the JS engine that will have conversations as they process our program?
 
-```javascript
-function foo(a) {
-  var b = a * 2;
+- _Engine_: responsible for start-to-finish compilation and execution of our
+  JavaScript program.
+- _Compiler_: one of *Engine*'s friends; handles all the dirty work of parsing
+  and code-generation (see previous section).
+- _Scope Manager_: another friend of *Engine*; collects and maintains a lookup
+  list of all the declared variables/identifiers, and enforces a set of rules as
+  to how these are accessible to currently executing code.
 
-  function bar(c) {
-    console.log(a, b, c);
-  }
+5. ### What's conversations between JS engine members for this snippet of code?
 
-  bar(b * 3);
-}
+   ```
+   var students = [
+      { id: 14, name: "Kyle" },
+      { id: 73, name: "Suzy" },
+      { id: 112, name: "Frank" },
+      { id: 6, name: "Sarah" }
+   ];
 
-foo(2);
+   function getStudentName(studentID) {
+      for (let student of students) {
+         if (student.id == studentID) {
+               return student.name;
+         }
+      }
+   }
+
+   var nextStudent = getStudentName(73);
+
+   console.log(nextStudent);
+   // Suzy
+   ```
+
+6. ### How JS treats var students = [ .. ] ?
+
+   We typically think of that as a single statement, but that's not how our
+   friend *Engine* sees it. In fact, JS treats these as two distinct operations,
+   one which *Compiler* will handle during compilation, and the other
+   which *Engine* will handle during execution.
+
+   To review and summarize how a statement like `var students = [ .. ]` is
+   processed, in two distinct steps:
+
+   1. *Compiler* sets up the declaration of the scope variable (since it wasn't
+      previously declared in the current scope).
+   2. While *Engine* is executing, to process the assignment part of the
+      statement, *Engine* asks *Scope Manager* to look up the variable,
+      initializes it to `undefined` so it's ready to use, and then assigns the
+      array value to it.
+
+7. ### Can scopes be lexically nested to any depth as the program defines?
+   Scopes can be lexically nested to any arbitrary depth as the program defines.
+8. ### What happens when at the beginning of a scope, if any identifier came from a function declaration?
+
+   At the beginning of a scope, if any identifier came from
+   a function declaration, that variable is automatically initialized to its
+   associated function reference
+
+9. ### What happens when at the beginning of a scope, if any identifier came from a var declaration?
+
+   if any identifier came from a var declaration (as opposed to let/const), that
+   variable is automatically initialized to undefined so that it can be used;
+
+10. ### What happens when at the beginning of a scope, if any identifier came from a let/const declaration?
+
+At the beginning of a scope, Any identifier came from a let/const declaration,
+the variable remains uninitialized (aka, in its "TDZ,") and cannot be used until
+its full declaration-and-initialization are executed.
+
+11. ### In this snippet of code, in the for (let student of students) { statement, students is a source reference that must be looked up. But how will that lookup be handled, since the scope of the function will not find such an identifier?
+
+```
+   var students = [
+      { id: 14, name: "Kyle" },
+      { id: 73, name: "Suzy" },
+      { id: 112, name: "Frank" },
+      { id: 6, name: "Sarah" }
+   ];
+
+   function getStudentName(studentID) {
+      for (let student of students) {
+         if (student.id == studentID) {
+               return student.name;
+         }
+      }
+   }
+
+   var nextStudent = getStudentName(73);
+
+   console.log(nextStudent);
 ```
 
-Bubble 1 encompasses the global scope, and has just one identifier in it: foo.
+To explain, let's imagine that bit of conversation playing out like this:
 
-Bubble 2 encompasses the scope of foo, which includes the three identifiers: a,
-bar and b.
+> Engine: Hey, Scope Manager (for the function), I have a source reference for
+> students, ever heard of it?
 
-Bubble 3 encompasses the scope of bar, and it includes just one identifier: c.
+> (Function) Scope Manager: Nope, never heard of it. Try the next outer scope.
 
-5. ### What's shadowing?
-   The same identifier name can be specified at multiple layers of nested scope,
-   which is called "shadowing" (the inner identifier "shadows" the outer
-   identifier). Regardless of shadowing, scope look-up always starts at the
-   innermost scope being executed at the time, and works its way outward/upward
-   until the first match, and stops.
-6. ### What's global variables? how can be accessed?
+> Engine: Hey, Scope Manager (for the global scope), I have a source reference
+> for students, ever heard of it?
 
-   Global variables are also automatically properties of the global object
-   (window in browsers, etc.), so it is possible to reference a global variable
-   not directly by its lexical name, but instead indirectly as a property
-   reference of the global object. This technique gives access to a global
-   variable which would otherwise be inaccessible due to it being shadowed.
-   However, non-global shadowed variables cannot be accessed.
+> (Global) Scope Manager: Yep, it was formally declared, here it is.
 
-7. ### Where is function lexical scope?
-   No matter where a function is invoked from, or even how it is invoked, its
-   lexical scope is only defined by where the function was declared.
-8. ### How many mechanism are there for cheating lexical scope?
+> ...
 
-   Two, **eval** and **with**
+One of the key aspects of lexical scope is that any time an identifier reference
+cannot be found in the current scope, the next outer scope in the nesting is
+consulted; that process is repeated until an answer is found or there are no
+more scopes to consult.
 
-9. ### What's eval?
+12. ### What's Nested Scope?
 
-   The eval(..) function in JavaScript takes a string as an argument, and treats
-   the contents of the string as if it had actually been authored code at that
-   point in the program. In other words, you can programmatically generate code
-   inside of your authored code, and run the generated code as if it had been
-   there at author time.
+One of the key aspects of lexical scope is that any time an identifier reference
+cannot be found in the current scope, the next outer scope in the nesting is
+consulted; that process is repeated until an answer is found or there are no
+more scopes to consult.
 
-10. ### How can you programatically generate code inside your authored code?
-11. ### How engine behave to eval(...)?
+13. ### What happen when Engine exhausts all lexically available scopes (moving outward) and still cannot resolve the lookup of an identifier?
 
-    On subsequent lines of code after an eval(..) has executed, the Engine will
-    not "know" or "care" that the previous code in question was dynamically
-    interpreted and thus modified the lexical scope environment. The Engine will
-    simply perform its lexical scope look-ups as it always does.
+    When Engine exhausts all lexically available scopes (moving outward) and
+    still cannot resolve the lookup of an identifier, an error condition then
+    exists. However, depending on the mode of the program (strict-mode or not)
+    and the role of the variable (i.e., target vs. source;), this error
+    condition will be handled differently.
 
-12. ### How eval(...) can modifies the existing lexical scope?
+14. ### What will happen when If the variable is a source, an unresolved identifier lookup is considered an undeclared (unknown, missing) variable?
 
-    Evaluating eval(..) (pun intended) in that light, it should be clear how
-    eval(..) allows you to modify the lexical scope environment by cheating and
-    pretending that author-time (aka, lexical) code was there all along.
+If the variable is a source, an unresolved identifier lookup is considered an
+undeclared (unknown, missing) variable, which always results in
+a ReferenceError being thrown.
 
-13. ### How eval(...) behave in strict-mode?
-    eval(..) when used in a strict-mode program operates in its own lexical
-    scope, which means declarations made inside of the eval() do not actually
-    modify the enclosing scope.
-14. ### What's other facilities in javascript similar to **eval**? How they work? Which one is safer? Which one should be avoided?
-    There are other facilities in JavaScript which amount to a very similar
-    effect to eval(..). setTimeout(..) and setInterval(..) can take a string for
-    their respective first argument, the contents of which are evaluated as the
-    code of a dynamically-generated function. This is old, legacy behavior and
-    long-since deprecated. Don't do it! The new Function(..) function
-    constructor similarly takes a string of code in its last argument to turn
-    into a dynamically-generated function (the first argument(s), if any, are
-    the named parameters for the new function). This function-constructor syntax
-    is slightly safer than eval(..), but it should still be avoided in your
-    code.
-15. ### What's **with** for?
+15. ### What will happen when if the variable is a target, and the code at that moment is running in strict-mode, the variable is considered undeclared?
 
-    with is typically explained as a short-hand for making multiple property
-    references against an object without repeating the object reference itself
-    each time.
+if the variable is a target, and the code at that moment is running in
+strict-mode, the variable is considered undeclared and similarly throws
+a ReferenceError.
 
-16. ### How is **with** work?
+16. ### What'll be printed? what's different between two of them?
 
-    The with statement takes an object, one which has zero or more properties,
-    and treats that object as if it is a wholly separate lexical scope, and thus
-    the object's properties are treated as lexically defined identifiers in that
-    "scope".
+```
+var studentName;
+typeof studentName;     // ?
 
-17. ### How is impacts of **eval** and **with** on performance?
-    Both eval(..) and with cheat the otherwise author-time defined lexical scope
-    by modifying or creating new lexical scope at runtime. Most of those
-    optimizations it would make are pointless if eval(..) or with are present,
-    so it simply doesn't perform the optimizations at all.
+typeof doesntExist;     // ?
+```
+
+```
+var studentName;
+typeof studentName;     // "undefined"
+
+typeof doesntExist;     // "undefined"
+```
+
+17. ### What will happen when If the variable is a target and strict-mode is not in effect?
+
+If the variable is a target and strict-mode is not in effect, a confusing and
+surprising legacy behavior kicks in. The troublesome outcome is that the global
+scope's Scope Manager will just create an accidental global variable to fulfill
+that target assignment!
+
+18. ### What'll be printed?
+
+```
+function getStudentName() {
+    nextStudent = "Suzy";
+}
+
+getStudentName();
+
+console.log(nextStudent);
+```
+
+```
+function getStudentName() {
+    // assignment to an undeclared variable :(
+    nextStudent = "Suzy";
+}
+
+getStudentName();
+
+console.log(nextStudent);
+// "Suzy" -- oops, an accidental-global variable!
+```
+
+19. ### What will happen to Assign a never-declared variable?
+
+    Assigning to a never-declared variable is an error, so it's right that we
+    would receive a ReferenceError here.

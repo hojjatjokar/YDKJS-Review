@@ -26,6 +26,7 @@
 
     1. **Tokenizing/Lexing:** breaking up a string of characters into meaningful
        (to the language) chunks, called tokens.
+
     2. **Parsing:** taking a stream (array) of tokens and turning it into a tree
        of nested elements, which collectively represent the grammatical
        structure of the program. This is called an Abstract Syntax Tree (AST).
