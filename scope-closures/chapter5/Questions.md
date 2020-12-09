@@ -1,337 +1,362 @@
-# Chapter 1
+# Chapter 5
 
-1. ### Closure difinition?
+1. ### What's Hoisting?
 
-Closures happen as a result of writing code that relies on lexical scope. They
-just happen. You do not even really have to intentionally create closures to
-take advantage of them. Closures are created and used for you all over your
-code. What you are missing is the proper mental context to recognize, embrace,
-and leverage closures for your own will.
+Definitions:
 
-2. ### Explain this code:
+- Variable being visible from the beginning of its enclosing scope, even though
+  its declaration may appear further down in the scope.
+- The typical assertion of what hoisting means: *lifting* any identifiers all
+  the way to the top of a scope.
 
-```javascript
-function foo() {
-  var a = 2;
+2. ### What's Function hoisting?
 
-  function bar() {
-    console.log(a);
+When a function declaration's name identifier is registered at the top of its
+scope, it's additionally auto-initialized to that function's reference. That's
+why the function can be called throughout the entire scope!
+
+3. ### Where `function` and `var` variable attach their name identifiers to?
+
+One key detail is that both `function` hoisting and `var` flavored variable
+hoisting attach their name identifiers to the nearest enclosing function
+scope (or, if none, the global scope), not a block scope.
+
+4. ### Does declarations with let and const hoist? Where they attach their name identifiers to?
+
+Declarations with `let` and `const` still hoist. But these two declaration forms
+attach to their enclosing block rather than just an enclosing function as with
+var and function declarations.
+
+5. ### Does function expressions hoist?
+
+Function hoisting only applies to function declarations, not to function
+expression assignments.
+
+6. ### Variables declared with var automatically initialized to what? and what scope type (function/block) does they have?
+
+Variables declared with `var` are also automatically initialized
+to `undefined` at the beginning of their scope—again, the nearest enclosing
+function, or the global.
+
+7. ### What's the rule of hoisting in order of hoisting parts?
+
+The "rule" of the hoisting metaphor is that function declarations are hoisted
+first, then variables are hoisted immediately after all the functions.
+
+8. ### Is there such a thing as a variable being "re-declared" in the same scope?
+
+   No
+
+9. ### What will happen If compiler find second var declaration statement?
+
+The compiler would find the second `var` declaration statement and ask the Scope
+Manager if it had already seen that identifier; **since it had, there wouldn't
+be anything else to do**.
+
+A repeated `var` declaration of the same identifier name in a scope is
+effectively a do-nothing operation.
+
+10. ### What happen to declaration within a scope using `let` or `const`?
+
+Declaration within a scope using `let` or `const` throw a `SyntaxError`.
+
+11. ### What happens if there are two declarations involving `let` and `var` ?
+
+It's not just that two declarations involving `let` will throw this error. If
+either declaration uses `let`, the other can be either `let` or `var`, and the
+error will still occur.
+
+12. ### What is const ?
+
+`const` cannot be repeated with the same identifier in the same scope. There's
+actually an overriding technical reason why that sort of "re-declaration" is
+disallowed, unlike let which disallows "re-declaration" mostly for stylistic
+reasons.
+
+13. ### What happen if omit assignment part of declaration with const ?
+
+The `const` keyword requires a variable to be initialized, so omitting an
+assignment from the declaration results in a `SyntaxError`
+
+14. ### Can you re-assign a variable that is declared with const?
+
+const declarations create variables that cannot be re-assigned.
+
+15. ### Explain `let` behavior in loops?
+
+All the rules of scope (including "re-declaration" of `let`created variables)
+are applied *per scope instance*. In other words, each time a scope is entered
+during execution, everything resets.
+
+Each loop iteration is its own new scope instance, and within each scope
+instance, the variable declared with `let` keyword is only being declared once.
+So there's no attempted "re-declaration," and thus no error. Before we consider
+other loop forms,
+
+16. ### Explain var behavior in loops?
+
+Is variable declared with `var` keyword being "re-declared" in each loop
+iteration , especially since we know var allows it? No. Because `var` is not
+treated as a block-scoping declaration, it attaches itself to the global scope.
+
+17. ### Explain the code:
+
+```
+  for (let i = 0; i < 3; i++) {
+      let value = i * 10;
+      console.log(`${ i }: ${ value }`);
   }
-
-  return bar;
-}
-var baz = foo();
-baz();
 ```
 
-Function bar() has access to the variable a in the outer enclosing scope because
-of lexical scope look-up rules (in this case, it's an RHS reference look-up).
+Answer:
 
-Is this "closure"?
-
-Well, technically... perhaps. But by our what-you-need-to-know definition
-above... not exactly. I think the most accurate way to explain bar() referencing
-a is via lexical scope look-up rules, and those rules are only (an important!)
-part of what closure is.
-
-From a purely academic perspective, what is said of the above snippet is that
-the function bar() has a closure over the scope of foo() (and indeed, even over
-the rest of the scopes it has access to, such as the global scope in our case).
-Put slightly differently, it's said that bar() closes over the scope of foo().
-Why? Because bar() appears nested inside of foo(). Plain and simple.
-
-3. ### Explain this code:
-
-```javascript
-  function(){
-    var a = 2;
-
-    function baz(){
-      consolel.log(a);
-    }
-
-    bar(baz);
-  }
-
-  function bar(fn){
-    fn();
-  }
+```
+// 0: 0
+// 1: 10
+// 2: 20
 ```
 
-We pass the inner function baz over to bar, and call that inner function
-(labeled fn now), and when we do, its closure over the inner scope of foo() is
-observed, by accessing a.
+It should be clear that there's only one `value` declared per scope instance.
 
-4. ### Explain this code
+Variable `i` scope is in the scope of `for` loop body, just like `value` is.
 
-```javascript
-var fn;
-function foo() {
-  var a = 2;
+`i` and `value` variables are both declared exactly once **per scope instance**.
+No "re-declaration" here.
 
-  function baz() {
-    console.log(a);
-  }
+18. ### Can you use const in loops?
 
-  fn = baz;
-}
+`for..in` and `for..of` are fine to use with `const` but not the general
+`for-loop`
 
-function bar() {
-  fn();
-}
+19. ### What's TDZ?
 
-foo();
-bar();
+The TDZ is the time window where a variable exists but is still uninitialized,
+and therefore cannot be accessed in any way. Only the execution of the
+instructions left by Compiler at the point of the original declaration can do
+that initialization. After that moment, the TDZ is done, and the variable is
+free to be used for the rest of the scope.
+
+20. ### Does var, let, const has a TDZ?
+
+A `var` also has technically has a TDZ, but it's zero in length and thus
+unobservable to our programs! Only let and const have an observable TDZ.
+
+21. ### Why TDZ errors occur?
+
+TDZ errors occur because `let/const` declarations do hoist their declarations to
+the top of their scopes, but unlike `var`, they defer the auto-initialization of
+their variables until the moment in the code's sequencing where the original
+declaration appeared. This window of time (hint: temporal), whatever its length,
+is the TDZ.
+
+22. ### Explain the code?
+
 ```
+greeting();
 
-These passings-around of functions can be indirect, too. Whatever facility we
-use to transport an inner function outside of its lexical scope, it will
-maintain a scope reference to where it was originally declared, and wherever we
-execute it, that closure will be exercised.
-
-5. Explain this code:
-
-```javascript
-function wait(message) {
-  setTimeout(function timer() {
-    console.log(message);
-  }, 1000);
-}
-
-wait('Hell, closure');
-```
-
-We take an inner function (named timer) and pass it to setTimeout(..). But timer
-has a scope closure over the scope of wait(..), indeed keeping and using a
-reference to the variable message.
-
-A thousand milliseconds after we have executed wait(..), and its inner scope
-should otherwise be long gone, that inner function timer still has closure over
-that scope.
-
-Deep down in the guts of the Engine, the built-in utility setTimeout(..) has
-reference to some parameter, probably called fn or func or something like that.
-Engine goes to invoke that function, which is invoking our inner timer function,
-and the lexical scope reference is still intact.
-
-6. ### When functions exercising closure? example?
-   Essentially whenever and wherever you treat functions (which access their own
-   respective lexical scopes) as first-class values and pass them around, you
-   are likely to see those functions exercising closure. Be that timers, event
-   handlers, Ajax requests, cross-window messaging, web workers, or any of the
-   other asynchronous (or synchronous!) tasks, when you pass in a callback
-   function, get ready to sling some closure around!
-7. ### Explain this code:
-
-```javascript
-for(var i = 1; i <= 5; i++){
-  setTimeout(funtion timer() {
-    console.log(i);
-  }, i*1000);
+function greeting() {
+    console.log("Hello!");
 }
 ```
 
-Firstly, let's explain where 6 comes from. The terminating condition of the loop
-is when i is not <=5. The first time that's the case is when i is 6. So, the
-output is reflecting the final value of the i after the loop terminates.
+This code works fine. You may have seen or even written code like it before. But
+did you ever wonder how or why it works? Specifically, why can you access the
+identifier greeting from line 1 (to retrieve and execute a function reference),
+even though the greeting() function declaration doesn't occur until line 4?
 
-This actually seems obvious on second glance. The timeout function callbacks are
-all running well after the completion of the loop. In fact, as timers go, even
-if it was setTimeout(.., 0) on each iteration, all those function callbacks
-would still run strictly after the completion of the loop, and thus print 6 each
-time.
+23. ### Explain the code?
 
-But there's a deeper question at play here. What's missing from our code to
-actually have it behave as we semantically have implied?
-
-What's missing is that we are trying to imply that each iteration of the loop
-"captures" its own copy of i, at the time of the iteration. But, the way scope
-works, all 5 of those functions, though they are defined separately in each loop
-iteration, all are closed over the same shared global scope, which has, in fact,
-only one i in it.
-
-Put that way, of course all functions share a reference to the same i. Something
-about the loop structure tends to confuse us into thinking there's something
-else more sophisticated at work. There is not. There's no difference than if
-each of the 5 timeout callbacks were just declared one right after the other,
-with no loop at all.
-
-OK, so, back to our burning question. What's missing? We need more cowbell
-closured scope. Specifically, we need a new closured scope for each iteration of
-the loop.
-
-8. Explain this code:
-
-```javascript
-for (var i = 1; i <= 5; i++) {
-  (function () {
-    setTimeout(function timer() {
-      console.log(i);
-    }, i * 1000);
-  })();
-}
 ```
+  greeting();
 
-We learned in Chapter 3 that the IIFE creates scope by declaring a function and
-immediately executing it. Does that work? Try it. Again, I'll wait.
-
-I'll end the suspense for you. Nope. But why? We now obviously have more lexical
-scope. Each timeout function callback is indeed closing over its own
-per-iteration scope created respectively by each IIFE.
-
-It's not enough to have a scope to close over if that scope is empty. Look
-closely. Our IIFE is just an empty do-nothing scope. It needs something in it to
-be useful to us.
-
-9. ### Explain this code:
-
-```javascript
-for(var i = 1; i <= 5; i++){
-  (funciton (j){
-    setTimeout(function timer(){
-      console.log(j);
-    }, j * 1000);
-  })(i);
-}
-```
-
-It's not enough to have a scope to close over if that scope is empty. Look
-closely. Our IIFE is just an empty do-nothing scope. It needs something in it to
-be useful to us.
-
-It needs its own variable, with a copy of the i value at each iteration. Of
-course, since these IIFEs are just functions, we can pass in i, and we can call
-it j if we prefer, or we can even call it i again. Either way, the code works
-now.
-
-The use of an IIFE inside each iteration created a new scope for each iteration,
-which gave our timeout function callbacks the opportunity to close over a new
-scope for each iteration, one which had a variable with the right per-iteration
-value in it for us to access.
-
-10. ### Explain code:
-
-```javascript
-for (let i = 1; i <= 5; i++) {
-  setTimeout(function timer() {
-    consoele.log(i);
-  }, i * 1000);
-}
-```
-
-Look carefully at our analysis of the previous solution. We used an IIFE to
-create new scope per-iteration. In other words, we actually needed a
-per-iteration block scope. Chapter 3 showed us the let declaration, which
-hijacks a block and declares a variable right there in the block.
-
-It essentially turns a block into a scope that we can close over. So, the
-following awesome code "just works"
-
-11. ### Revealing module? example
-
-Firstly, CoolModule() is just a function, but it has to be invoked for there to
-be a module instance created. Without the execution of the outer function, the
-creation of the inner scope and the closures would not occur.
-
-Secondly, the CoolModule() function returns an object, denoted by the
-object-literal syntax { key: value, ... }. The object we return has references
-on it to our inner functions, but not to our inner data variables. We keep those
-hidden and private. It's appropriate to think of this object return value as
-essentially a public API for our module.
-
-This object return value is ultimately assigned to the outer variable foo, and
-then we can access those property methods on the API, like foo.doSomething().
-
-Note: It is not required that we return an actual object (literal) from our
-module. We could just return back an inner function directly. jQuery is actually
-a good example of this. The jQuery and \$ identifiers are the public API for the
-jQuery "module", but they are, themselves, just a function (which can itself
-have properties, since all functions are objects).
-
-The doSomething() and doAnother() functions have closure over the inner scope of
-the module "instance" (arrived at by actually invoking CoolModule()). When we
-transport those functions outside of the lexical scope, by way of property
-references on the object we return, we have now set up a condition by which
-closure can be observed and exercised.
-
-To state it more simply, there are two "requirements" for the module pattern to
-be exercised:
-
-There must be an outer enclosing function, and it must be invoked at least once
-(each time creates a new module instance).
-
-The enclosing function must return back at least one inner function, so that
-this inner function has closure over the private scope, and can access and/or
-modify that private state.
-
-An object with a function property on it alone is not really a module. An object
-which is returned from a function invocation which only has data properties on
-it and no closured functions is not really a module, in the observable sense.
-
-example:
-
-```javascript
-function CoolModule() {
-  var something = 'cool';
-  var another = [1, 2, 3];
-
-  function doSomething() {
-    console.log(something);
-  }
-
-  function doAnother() {
-    console.log(another.join(' ! '));
-  }
-
-  return {
-    doSomething: doSomething,
-    doAnother: doAnother,
+  var greeting = function greeting() {
+      console.log("Hello!");
   };
-}
-
-var foo = CoolModule();
-
-foo.doSomething(); // cool
-foo.doAnother(); // 1 ! 2 ! 3
 ```
 
-12. ### Requirements for module pattern to be exercised?
+24. ### Explain the code?
 
-To state it more simply, there are two "requirements" for the module pattern to
-be exercised:
+```
+  greeting = "Hello!";
+  console.log(greeting);
+  // ??
 
-- There must be an outer enclosing function, and it must be invoked at least
-  once (each time creates a new module instance).
+  var greeting = "Howdy!";
+```
 
-- The enclosing function must return back at least one inner function, so that
-  this inner function has closure over the private scope, and can access and/or
-  modify that private state.
+25. ### Explain the code?
 
-13. ### An object with a function property on it alone is a module?
+```
+  studentName = "Suzy";
+  greeting();
 
-An object with a function property on it alone is not really a module.
+  // ??
+  function greeting() {
+      console.log(`Hello ${ studentName }!`);
+  }
+  var studentName;
+```
 
-14. ### An object which is returned from a function invocation which only has data properties on it, is this module?
+26. ### Explain the code?
 
-An object which is returned from a function invocation which only has data
-properties on it and no closured functions is not really a module, in the
-observable sense.
+```
+  function greeting() {
+      console.log(`Hello ${ studentName }!`);
+  }
+  var studentName;
 
-15. Es6 modules?
+  studentName = "Suzy";
+  greeting();
+  // ??
+```
 
-ES6 adds first-class syntax support for the concept of modules. When loaded via
-the module system, ES6 treats a file as a separate module. Each module can both
-import other modules or specific API members, as well export their own public
-API members.
+27. ### Explain the code?
 
-Note: Function-based modules aren't a statically recognized pattern (something
-the compiler knows about), so their API semantics aren't considered until
-run-time. That is, you can actually modify a module's API during the run-time
-(see earlier publicAPI discussion).
+```
+  var studentName = "Frank";
+  console.log(studentName);
+  // Frank
 
-By contrast, ES6 Module APIs are static (the APIs don't change at run-time).
-Since the compiler knows that, it can (and does!) check during (file loading
-and) compilation that a reference to a member of an imported module's API
-actually exists. If the API reference doesn't exist, the compiler throws an
-"early" error at compile-time, rather than waiting for traditional dynamic
-run-time resolution (and errors, if any).
+  var studentName;
+  console.log(studentName);   // ???
+```
+
+28. ### Explain the code?
+
+```
+var studentName = "Frank";
+console.log(studentName);   // ??
+
+var studentName;
+console.log(studentName);   // ??
+
+var studentName = undefined;
+console.log(studentName);   // ??
+```
+
+29. ### Explain the code?
+
+```
+var greeting;
+
+function greeting() {
+    console.log("Hello!");
+}
+
+// basically, a no-op
+var greeting;
+
+typeof greeting;        // ?
+
+var greeting = "Hello!";
+
+typeof greeting;        // ?
+```
+
+30. ### Explain the code?
+
+```
+  let studentName = "Frank";
+
+  console.log(studentName);
+
+  let studentName = "Suzy";
+```
+
+31. ### Explain the code?
+
+```
+var studentName = "Frank";
+
+let studentName = "Suzy";
+```
+
+32. ### Explain the code?
+
+```
+let studentName = "Frank";
+
+var studentName = "Suzy";
+```
+
+33. ### Explain the code?
+
+```
+const studentName = "Frank";
+console.log(studentName);
+// ??
+
+studentName = "Suzy";
+```
+
+34. ### Explain the code?
+
+```
+  const studentName = "Frank";
+
+  // ??
+  const studentName = "Suzy";
+```
+
+35. ### Explain the code?
+
+```
+  var keepGoing = true;
+
+  while (keepGoing) {
+      let value = Math.random();
+      if (value > 0.5) {
+          keepGoing = false;
+      }
+  }
+```
+
+36. ### Explain the code?
+
+```
+for (let i = 0; i < 3; i++) {
+    let value = i * 10;
+    console.log(`${ i }: ${ value }`);
+}
+// 0: ?
+// 1: ?
+// 2: ?
+```
+
+37. ### Explain the code?
+
+```
+  {
+      // a fictional variable for illustration
+      let $$i = 0;
+
+      for ( /* nothing */; $$i < 3; $$i++) {
+          // here's our actual loop `i`!
+          let i = $$i;
+
+          let value = i * 10;
+          console.log(`${ i }: ${ value }`);
+      }
+      // 0: 0
+      // 1: 10
+      // 2: 20
+  }
+```
+
+38. ### Explain the code?
+
+```
+var studentName = "Kyle";
+
+{
+    console.log(studentName);
+    // ???
+
+    // ..
+
+    let studentName = "Suzy";
+
+    console.log(studentName);
+    // Suzy
+}
+```
