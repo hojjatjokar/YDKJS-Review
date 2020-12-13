@@ -1,5 +1,12 @@
-1. Why is **this** useful?
-2. How many incorrect assumtion are there about **this**? name them?
+1. ### Why is **this** useful?
+
+    `this` mechanism provides a more elegant way of implicitly "passing along" an object reference, leading to cleaner API design and easier re-use.
+
+2. ### How many incorrect assumtion are there about **this**? name them?
+
+-   assumption with `this` refers to the function **itself**
+-   assumption with `this` refers to the **function's Scope**
+
 3. Consider this code:
 
 ```javascript
