@@ -1,10 +1,26 @@
-1. What's **this**?
-2. What's call-site?
-3. Why we have to know/inspect call-site?
-4. How is finding call-site?
-5. What's call-stack?
-6. What's important about call-stack?
-7. find call-stack and call-site for each function?
+1. ### What's `this`?
+
+`this` is a binding made for each function invocation, based entirely on its call-site (how the function is called).
+
+2. ### What's call-site?
+    The location in code where a function is called (not where it's declared)
+3. ### Why we have to know/inspect call-site?
+    To understand this binding, we have to understand the call-site: the location in code where a function is called (not where it's declared). We must inspect the call-site to answer the question: what's this this a reference to?
+4. ### How is finding call-site?
+
+Finding the call-site is generally: "go locate where a function is called from", but it's not always that easy, as certain coding patterns can obscure the true call-site.
+
+What's important is to think about the call-stack (the stack of functions that have been called to get us to the current moment in execution). The call-site we care about is in the invocation before the currently executing function.
+
+5. ### What's call-stack?
+
+The stack of functions that have been called to get us to the current moment in execution
+
+6. ### What's important about call-stack?
+
+The call-site we care about is in the invocation before the currently executing function.
+
+7. ### Find call-stack and call-site for each function?
 
 ```javascript
 function baz() {
@@ -28,9 +44,14 @@ function foo() {
 baz(); // call site for?
 ```
 
-8. Rules for determining **this**?
-9. When Default binding will apply?
-10. Consider this code;
+8. ### Rules for determining `this`?
+    1. Default Binding
+    2. Implicit Binding
+    3. Explicit Binding
+    4. new Binding
+9. ### When Default binding will apply?
+    standalone function invocation. Think of this this rule as the default catch-all rule when none of the other rules apply.
+10. ### Consider this code;
 
 ```javascript
 function foo() {
@@ -40,13 +61,23 @@ var a = 2;
 foo();
 ```
 
--   Which rule will apply?
--   What will be **this**?
--   How do we know that the default binding rule applies?
+1. Which rule apply?
+2. What will be **_this_**?
+3. How do we know that the default binding rule applies?
 
-11. If strict mode is in effect, what will happen to default binding?
-12. In default binding, is it important that content of function running in strict-mode or call-site?
-13. Consider this code:
+Answer:
+
+1.  The **default binding** for this applies to the function call, and so points this at the global object
+2.  Global Object
+3.  We examine the call-site to see how `foo()` is called. In our snippet, `foo()` is called with a plain, un-decorated function reference. None of the other rules we will demonstrate will apply here, so the default binding applies instead.
+
+-
+
+11. ### If strict mode is in effect, what will happen to default binding?
+    If strict mode is in effect, the global object is not eligible for the default binding, so the this is instead set to undefined.
+12. ### In default binding, is it important that content of function running in strict-mode or call-site?
+    A subtle but important detail is: even though the overall this binding rules are entirely based on the call-site, the global object is only eligible for the default binding if the contents of foo() are not running in strict mode; the strict mode state of the call-site of foo() is irrelevant.
+13. ### Consider this code:
 
 ```javascript
 function foo() {
@@ -59,11 +90,43 @@ var a = 2;
 })();
 ```
 
-14. Mixing strict mode and non strict mode in code is good? What about third-party library?
-15. explain implicit binding?
-16. In implicit binding what is difference between when foo is initially declared on object or is added as reference later?
-17. Which level of an object property reference chain matters to the call-site in implicit binding?
-18. What's implicitly lost? and when it happens?
+14. ### Mixing strict mode and non strict mode in code is good? What about third-party library?
+    Note: Intentionally mixing strict mode and non-strict mode together in your own code is generally frowned upon. Your entire program should probably either be Strict or non-Strict. However, sometimes you include a third-party library that has different Strict'ness than your own code, so care must be taken over these subtle compatibility details.
+15. ### Explain implicit binding?
+
+Another rule to consider is: does the call-site have a **context object,** also referred to as an owning or containing object, though these alternate terms could be slightly misleading.
+
+When there is a context object for a function reference, the implicit binding rule says that it's that object which should be used for the function call's this binding.
+
+16. ### In implicit binding what is difference between when foo is initially declared on object or is added as reference later?
+
+Another rule to consider is: does the call-site have a **context object,** also referred to as an owning or containing object, though these alternate terms could be slightly misleading.
+
+When there is a context object for a function reference, the implicit binding rule says that it's that object which should be used for the function call's this binding.
+
+17. ### Which level of an object property reference chain matters to the call-site in implicit binding?
+
+    Only the top/last level of an object property reference chain matters to the call-site. For instance:
+
+    ```
+    function foo() {
+        console.log( this.a );
+    }
+
+    var obj2 = {
+        a: 42,
+        foo: foo
+    };
+
+    var obj1 = {
+        a: 2,
+        obj2: obj2
+    };
+
+    obj1.obj2.foo(); // 42
+    ```
+
+18. ### What's implicitly lost? and when it happens?
 19. Implicitly lost when assigning variable? example?
 20. Implicitly lost when passing a call back function?
 21. What if the function is built-in for implicitly lost, what is difference?
