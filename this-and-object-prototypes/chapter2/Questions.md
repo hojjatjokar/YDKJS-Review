@@ -127,16 +127,141 @@ When there is a context object for a function reference, the implicit binding ru
     ```
 
 18. ### What's implicitly lost? and when it happens?
-19. Implicitly lost when assigning variable? example?
-20. Implicitly lost when passing a call back function?
-21. What if the function is built-in for implicitly lost, what is difference?
-22. What is explicit binding?
-23. Which methods for explicit binding?
-24. How call, apply work? example?
-25. If you pass a simple primitive value as the this binding to apply or call, what will happen?
-26. What's difference between call and apply with respect to this?
-27. What is explicit binding response to losing this binding (implicit lost)?
-28. What is hard binding? example
+
+One of the most common frustrations that `this` binding creates is when an implicitly bound function loses that binding, which usually means it falls back to the default binding, of either the global object or `undefined`, depending on `strict mode`.
+
+19. ### Implicitly lost when assigning variable? example?
+
+```
+function foo() {
+	console.log( this.a );
+}
+
+var obj = {
+	a: 2,
+	foo: foo
+};
+
+var bar = obj.foo; // function reference/alias!
+
+var a = "oops, global"; // `a` also property on global object
+
+bar(); // "oops, global"
+```
+
+Even though bar appears to be a reference to obj.foo, in fact, it's really just another reference to foo itself. Moreover, the call-site is what matters, and the call-site is bar(), which is a plain, un-decorated call and thus the default binding applies.
+
+20. ### Implicitly lost when passing a call back function?
+
+The more subtle, more common, and more unexpected way this occurs is when we consider passing a callback function:
+
+```
+function foo() {
+	console.log( this.a );
+}
+
+function doFoo(fn) {
+	// `fn` is just another reference to `foo`
+
+	fn(); // <-- call-site!
+}
+
+var obj = {
+	a: 2,
+	foo: foo
+};
+
+var a = "oops, global"; // `a` also property on global object
+
+doFoo( obj.foo ); // "oops, global"
+```
+
+Parameter passing is just an implicit assignment, and since we're passing a function, it's an implicit reference assignment, so the end result is the same as the previous snippet.
+
+21. ### What if the function is built-in for implicitly lost, what is difference?
+
+No difference, same outcome.
+
+```
+function foo() {
+	console.log( this.a );
+}
+
+var obj = {
+	a: 2,
+	foo: foo
+};
+
+var a = "oops, global"; // `a` also property on global object
+
+setTimeout( obj.foo, 100 ); // "oops, global"
+```
+
+22. ### What is explicit binding?
+
+With *implicit binding* as we just saw, we had to mutate the object in question to include a reference on itself to the function and use this property function reference to indirectly (implicitly) bind `this` to the object.
+
+If you want to force a function call to use a particular object for `this` binding, without putting a property function reference on the object you have to use explicit binding.
+
+23. ### Which methods for explicit binding?
+
+"All" functions in the language have some utilities available to them (via their [[Prototype]]) which can be useful for this task. Specifically, functions have call(..) and apply(..) methods. Technically, JavaScript host environments sometimes provide functions which are special enough that they do not have such functionality. But those are few. The vast majority of functions provided, and certainly all functions you will create, do have access to call(..) and apply(..).
+
+24. ### How call, apply work? example?
+
+They both take, as their first parameter, an object to use for the this, and then invoke the function with that this specified. Since you are directly stating what you want the this to be, we call it explicit binding.
+
+```javascript
+function foo() {
+    console.log(this.a);
+}
+
+var obj = {
+    a: 2,
+};
+
+foo.call(obj); // 2
+```
+
+Invoking foo with explicit binding by `foo.call(..)` allows us to force its this to be obj.
+
+25. ### If you pass a simple primitive value as the this binding to apply or call, what will happen?
+
+If you pass a simple primitive value (of type string, boolean, or number) as the this binding, the primitive value is wrapped in its object-form (`new String(..)`, `new Boolean(..)`, or `new Number(..)`, respectively). This is often referred to as "boxing".
+
+26. ### What's difference between call and apply with respect to this?
+
+With respect to this binding, `call(..)` and `apply(..)` are identical. They do behave differently with their additional parameters, but that's not something we care about presently.
+
+27. ### What is explicit binding response to losing this binding (implicit lost)?
+
+Unfortunately, explicit binding alone still doesn't offer any solution to the issue mentioned previously, of a function "losing" its intended this binding, or just having it paved over by a framework, etc.
+
+28. ### What is hard binding? example
+
+```jsx
+function foo() {
+    console.log(this.a);
+}
+
+var obj = {
+    a: 2,
+};
+
+var bar = function () {
+    foo.call(obj);
+};
+
+bar(); // 2
+setTimeout(bar, 100); // 2
+
+// `bar` hard binds `foo`'s `this` to `obj`
+// so that it cannot be overriden
+bar.call(window); // 2
+```
+
+We create a function `bar()` which, internally, manually calls `foo.call(obj)`, thereby forcibly invoking `foo` with `obj` binding for `this`. No matter how you later invoke the function bar, it will always manually invoke `foo` with `obj`. This binding is both explicit and strong, so we call it hard binding.
+
 29. Explain
 
 ```javascript
@@ -154,8 +279,34 @@ setTimeout(bar, 100); // ?
 bar.call(window); // ?
 ```
 
-30. **function.prototype.bind** ? why provided? how it works? example
-31. What is API call context? example? what they use internall?
+30. ### `function.prototype.bind` ? why provided? how it works? example
+
+Since hard binding is such a common pattern, it's provided with a built-in utility as of ES5: `Function.prototype.bind`, and it's used like this:
+
+```jsx
+function foo(something) {
+    console.log(this.a, something);
+    return this.a + something;
+}
+
+var obj = {
+    a: 2,
+};
+
+var bar = foo.bind(obj);
+
+var b = bar(3); // 2 3
+console.log(b); // 5
+```
+
+`bind(..)` returns a new function that is hard-coded to call the original function with the this context set as you specified.
+
+31. ### What is API call context? example? what they use internall?
+
+Many libraries' functions, and indeed many new built-in functions in the JavaScript language and host environment, provide an optional parameter, usually called "context", which is designed as a work-around for you not having to use `bind(..)` to ensure your callback function uses a particular this.
+
+Internally, these various functions almost certainly use explicit binding via `call(..)` or `apply(..)`, saving you the trouble.
+
 32. In traditional class-oriented languages, what is constructor?
 33. In JS what is constructor? constructor function or constructor call? are they special funtion?
 34. What is relationship between JS constructor and class oriented constructor?
