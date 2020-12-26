@@ -307,11 +307,34 @@ Many libraries' functions, and indeed many new built-in functions in the JavaScr
 
 Internally, these various functions almost certainly use explicit binding via `call(..)` or `apply(..)`, saving you the trouble.
 
-32. In traditional class-oriented languages, what is constructor?
-33. In JS what is constructor? constructor function or constructor call? are they special funtion?
-34. What is relationship between JS constructor and class oriented constructor?
-35. When a function is invoked with new in front of it (constructor call), what things will automatically happens?
-36.
+32. ### In traditional class-oriented languages, what is constructor?
+
+In traditional class-oriented languages, "constructors" are special methods attached to classes, that when the class is instantiated with a new operator, the constructor of that class is called. This usually looks something like this:
+
+```
+something = new MyClass(..);
+```
+
+33. ### In JS what is constructor? constructor function or constructor call? are they special funtion?
+
+First, let's re-define what a "constructor" in JavaScript is. In JS, constructors are just functions that happen to be called with the new operator in front of them. They are not attached to classes, nor are they instantiating a class. They are not even special types of functions. They're just regular functions that are, in essence, hijacked by the use of new in their invocation.
+
+34. ### What is relationship between JS constructor and class oriented constructor?
+
+JavaScript has a new operator, and the code pattern to use it looks basically identical to what we see in those class-oriented languages; most developers assume that JavaScript's mechanism is doing something similar. However, there really is no connection to class-oriented functionality implied by new usage in JS.
+
+35. ### When a function is invoked with new in front of it (constructor call), what things will automatically happens?
+
+When a function is invoked with `new` in front of it, otherwise known as a constructor call, the following things are done automatically:
+
+1. A brand new object is created (aka, constructed) out of thin air
+2. T*he newly constructed object is `[[Prototype]]`linked*
+3. The newly constructed object is set as the `this` binding for that function call
+4. Unless the function returns its own alternate **object**, the `new` invoked function call will *automatically* return the newly constructed object.
+
+-
+
+36. ### Explain
 
 ```javascript
 function foo(a) {
@@ -321,11 +344,73 @@ var bar = new foo(2);
 console.log(bar.a); // ?
 ```
 
-37. If the call-site has multiple eligible rules which will be apply? what order?
-38. How har bind physical works?
-39. Why is new being able to override hardbinding useful?
-40. What is prtial application/curring/defaulted argument? example?
-41. Ask 4 question to determine **this**?
+By calling `foo(..)` with new in front of it, we've constructed a new object and set that new object as the this for the call of foo(..). So new is the final way that a function call's this can be bound. We'll call this new binding.
+
+37. ### If the call-site has multiple eligible rules which will be apply? what order?
+
+-   The default binding
+-   Implicit binding
+-   Explicit binding
+-   `new` being able to override hard binding
+
+38. ### How hard bind physical works?
+
+Function.prototype.bind(..) creates a new wrapper function that is hard-coded to ignore its own this binding (whatever it may be), and use a manual one we provide. the built-in Function.prototype.bind(..) as of ES5, The part that's allowing new overriding is:
+
+```javascript
+this instanceof fNOP && oThis ? this : oThis;
+
+// ... and:
+
+fNOP.prototype = this.prototype;
+fBound.prototype = new fNOP();
+```
+
+39. ### Why is new being able to override hardbinding useful?
+
+The primary reason for this behavior is to create a function (that can be used with new for constructing objects) that essentially ignores the this hard binding but which presets some or all of the function's arguments. One of the capabilities of bind(..) is that any arguments passed after the first this binding argument are defaulted as standard arguments to the underlying function (technically called "partial application", which is a subset of "currying").
+
+40. ### What is prtial application/curring/defaulted argument? example?
+
+One of the capabilities of bind(..) is that any arguments passed after the first this binding argument are defaulted as standard arguments to the underlying function (technically called "partial application", which is a subset of "currying").
+
+```javascript
+function foo(p1, p2) {
+    this.val = p1 + p2;
+}
+
+// using `null` here because we don't care about
+// the `this` hard-binding in this scenario, and
+// it will be overridden by the `new` call anyway!
+var bar = foo.bind(null, "p1");
+
+var baz = new bar("p2");
+
+baz.val; // p1p2
+```
+
+41. ### Ask 4 question to determine **this**?
+
+1. Is the function called with `new` (**new binding**)? If so, `this` is the newly constructed object.
+
+    ```jsx
+    var bar = new foo();
+    ```
+
+1. Is the function called with `call` or `apply` (**explicit binding**), even hidden inside a `bind` *hard binding*? If so, `this` is the explicitly specified object.
+
+    ```jsx
+    var bar = foo.call(obj2);
+    ```
+
+1. Is the function called with a context (**implicit binding**), otherwise known as an owning or containing object? If so, `this` is *that* context object.
+
+    ```jsx
+    var bar = obj1.foo();
+    ```
+
+-
+
 42. What are binding exeptions?
 43. When ignored **this** will happen? and what will be applies?
 44.
