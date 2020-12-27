@@ -411,9 +411,16 @@ baz.val; // p1p2
 
 -
 
-42. What are binding exeptions?
-43. When ignored **this** will happen? and what will be applies?
-44.
+42. ### What are binding exeptions?
+
+-   Ignored this
+-   Indirection
+
+43. ### When ignored `this` will happen? and what will be applies?
+
+If you pass null or undefined as a this binding parameter to call, apply, or bind, those values are effectively ignored, and instead, the default binding rule applies to the invocation.
+
+44. ### Explain
 
 ```javascript
 function foo() {
@@ -423,8 +430,11 @@ var a = 2;
 foo.call(null);
 ```
 
-45. Why would intentionally pass something like **null** for a **this** binding?
-46.
+45. ### Why would intentionally pass something like `null` for a `this` binding?
+
+It's quite common to use `apply(..)` for spreading out arrays of values as parameters to a function call. Similarly, `bind(..)` can curry parameters (pre-set values), which can be very helpful.
+
+46. ### Explain
 
 ```javascript
 function foo(a, b) {
@@ -435,11 +445,25 @@ var bar = foo.bind(null, 2);
 bar(3); // ?
 ```
 
-47. ES6 subsitute option for **spread out**?
-48. ES6 subsitute option for **curring**?
-49. Is there **danger** in using **null** when you don't care about the **this** binding ?What's safer **this**?
-50. What's indirection in binding exceptions?
-51.
+47. ### ES6 subsitute option for `spread out`?
+
+ES6 has the `...` spread operator which will let you syntactically "spread out" an array as parameters without needing `apply(..)`, such as `foo(...[1,2])`, which amounts to `foo(1,2)` -- syntactically avoiding a this binding if it's unnecessary.
+
+48. ### ES6 subsitute option for `curring`?
+
+Unfortunately, there's no ES6 syntactic substitute for currying, so the this parameter of the `bind(..)` call still needs attention.
+
+49. ### Is there `danger` in using `null` when you don't care about the `this` binding ?What's safer `this`?
+
+Perhaps a somewhat "safer" practice is to pass a specifically set up object for `this` which is guaranteed not to be an object that can create problematic side effects in your program. Borrowing terminology from networking (and the military), we can create a "DMZ" (de-militarized zone) object -- nothing more special than a completely empty, non-delegated (see Chapters 5 and 6) object.
+
+If we always pass a DMZ object for ignored `this` bindings we don't think we need to care about, we're sure any hidden/unexpected usage of `this` will be restricted to the empty object, which insulates our program's `global` object from side-effects.
+
+50. ### What's indirection in binding exceptions?
+
+Another thing to be aware of is you can (intentionally or not!) create "indirect references" to functions, and in those cases, when that function reference is invoked, the default binding rule also applies.
+
+51. ###
 
 ```javascript
 function foo() {
@@ -457,9 +481,39 @@ o.foo(); // ??
 (o.foo = o.foo)(); // ??
 ```
 
-52. Softening binding? why?
-53. Soft bind utility?
-54.
+52. ### Softening binding? why?
+
+We saw earlier that *hard binding* was one strategy for preventing a function call falling back to the *default binding* rule inadvertently, by forcing it to be bound to a specific `this` (unless you use `new` to override it!). The problem is, *hard-binding* greatly reduces the flexibility of a function, preventing manual `this` override with either the *implicit binding* or even subsequent *explicit binding* attempts.
+
+It would be nice if there was a way to provide a different default for *default binding* (not `global` or `undefined`), while still leaving the function able to be manually `this` bound via *implicit binding* or *explicit binding* techniques.
+
+53. ### Soft bind utility?
+
+    We can construct a so-called soft binding utility which emulates our desired behavior.
+
+    ```javascript
+    if (!Function.prototype.softBind) {
+        Function.prototype.softBind = function (obj) {
+            var fn = this,
+                curried = [].slice.call(arguments, 1),
+                bound = function bound() {
+                    return fn.apply(
+                        !this ||
+                            (typeof window !== "undefined" &&
+                                this === window) ||
+                            (typeof global !== "undefined" && this === global)
+                            ? obj
+                            : this,
+                        curried.concat.apply(curried, arguments)
+                    );
+                };
+            bound.prototype = Object.create(fn.prototype);
+            return bound;
+        };
+    }
+    ```
+
+54. ### Explain?
 
 ```javascript
 function foo() {
