@@ -1,20 +1,90 @@
-1. Objects comes in what forms?
-2. Example of literal syntax for object?
-3. Example of constructed form for object?
-4. Difference between literal form and constructed form?
-5. Which form is more common? literal or constructed?
-6. Primary types?
-7. **null** is object types?
-8. Object sub-types (built-in objects)?
-9. What's first class functions?
-10. Functions are objects? What they have more than object?
-11. Arrays are objects? What they have more than object?
-12. Object sub-types are just what?
-13. What's relationship between these built-in functions and simple primitives?
-14. Have **null**, **undefined**, object wrapper?
-15. Date have literal form or constructed form?
-16. What's difference between two form of creating objects, arrays, functions and RegExp? Which is more prefered?
-17. Error objects created in which way most? How can we create?
+1. ### Objects comes in what forms?
+    Objects come in two forms: the declarative (literal) form, and the constructed form.
+2. ### Example of literal syntax for object?
+
+```javascript
+var myObj = {
+    key: value,
+    // ...
+};
+```
+
+3. ### Example of constructed form for object?
+
+```javascript
+var myObj = new Object();
+myObj.key = value;
+```
+
+4. ### Difference between literal form and constructed form?
+
+The constructed form and the literal form result in exactly the same sort of object. The only difference really is that you can add one or more key/value pairs to the literal declaration, whereas with constructed-form objects, you must add the properties one-by-one.
+
+5. ### Which form is more common? literal or constructed?
+
+It's extremely uncommon to use the "constructed form" for creating objects as just shown. You would pretty much always want to use the literal syntax form. The same will be true of most of the built-in objects.
+
+6. ### Primary types?
+
+Objects are the general building block upon which much of JS is built. They are one of the 6 primary types (called "language types" in the specification) in JS:
+
+-   `string`
+-   `number`
+-   `boolean`
+-   `null`
+-   `undefined`
+-   `object`
+
+7. ### `null` is object types?
+
+null is sometimes referred to as an object type, but this misconception stems from a bug in the language which causes typeof null to return the string "object" incorrectly (and confusingly). In fact, null is its own primitive type.
+
+8. ### Object sub-types (built-in objects)?
+
+By contrast, there *are* a few special object sub-types, which we can refer to as *complex primitives*.
+
+`function` is a sub-type of object (technically, a "callable object"). Functions in JS are said to be "first class" in that they are basically just normal objects (with callable behavior semantics bolted on), and so they can be handled like any other plain object.
+
+Arrays are also a form of objects, with extra behavior. The organization of contents in arrays is slightly more structured than for general objects.
+
+9. ### What's first class functions?
+
+Functions in JS are said to be "first class" in that they are basically just normal objects (with callable behavior semantics bolted on), and so they can be handled like any other plain object.
+
+10. ### Functions are objects? What they have more than object?
+
+function is a sub-type of object. Functions in JS are said to be "first class" in that they are basically just normal objects (with callable behavior semantics bolted on), and so they can be handled like any other plain object.
+
+11. ### Arrays are objects? What they have more than object?
+
+Arrays are also a form of objects, with extra behavior. The organization of contents in arrays is slightly more structured than for general objects.
+
+12. ### Object sub-types are just what?
+
+There are a few special object sub-types, which we can refer to as complex primitives.
+
+13. ### What's relationship between these built-in functions and simple primitives?
+
+    For some of them, their names seem to imply they are directly related to their simple primitives counter-parts, but in fact, their relationship is more complicated.
+
+    Luckily, the language automatically coerces a `"string"` primitive to a `String` object when necessary, which means you almost never need to explicitly create the Object form. It is **strongly preferred** by the majority of the JS community to use the literal form for a value, where possible, rather than the constructed object form.
+
+14. ### Have **null**, **undefined**, object wrapper?
+
+`null` and `undefined` have no object wrapper form, only their primitive values.
+
+15. ### Date have literal form or constructed form?
+
+Date values can only be created with their constructed object form, as they have no literal form counter-part.
+
+16. ### What's difference between two form of creating objects, arrays, functions and RegExp? Which is more prefered?
+
+`Object`s, `Array`s, `Function`s, and `RegExp`s (regular expressions) are all objects regardless of whether the literal or constructed form is used. The constructed form does offer, in some cases, more options in creation than the literal form counterpart. Since objects are created either way, the simpler literal form is almost universally preferred. **Only use the constructed form if you need the extra options.**
+
+17. ### Error objects created in which way most? How can we create?
+
+Error objects are rarely created explicitly in code, but usually created automatically when exceptions are thrown. They can be created with the constructed form new Error(..), but it's often unnecessary.
+
 18. Content of an object consist of what?
 19. How engin store object values? inside object? What is stored object container? property names act as what?
 20. How to access value in object?
