@@ -85,13 +85,31 @@ Date values can only be created with their constructed object form, as they h
 
 Error objects are rarely created explicitly in code, but usually created automatically when exceptions are thrown. They can be created with the constructed form new Error(..), but it's often unnecessary.
 
-18. Content of an object consist of what?
-19. How engin store object values? inside object? What is stored object container? property names act as what?
-20. How to access value in object?
-21. Which access method to value in object preferred?
-22. What's difference between two method of acessing?
-23. In object, property names are always in whih type? If you use another type what will happen?
-24.
+18. ### Content of an object consist of what?
+
+The contents of an object consist of values (any type) stored at specifically named locations, which we call properties.
+
+19. ### How engin store object values? inside object? What is stored object container? property names act as what?
+
+It's important to note that while we say "contents" which implies that these values are actually stored inside the object, that's merely an appearance. The engine stores values in implementation-dependent ways, and may very well not store them in some object container. What is stored in the container are these property names, which act as pointers (technically, references) to where the values are stored.
+
+20. ### How to access value in object?
+
+To access the value at the location a in myObject, we need to use either the . operator or the [ ] operator. The .a syntax is usually referred to as "property" access, whereas the ["a"] syntax is usually referred to as "key" access. In reality, they both access the same location, and will pull out the same value, 2, so the terms can be used interchangeably. We will use the most common term, "property access" from here on.
+
+21. ### Which access method to value in object preferred?
+
+the `.` operator
+
+22. ### What's difference between two method of acessing?
+
+The main difference between the two syntaxes is that the . operator requires an Identifier compatible property name after it, whereas the [".."] syntax can take basically any UTF-8/unicode compatible string as the name for the property. To reference a property of the name "Super-Fun!", for instance, you would have to use the ["Super-Fun!"] access syntax, as Super-Fun! is not a valid Identifier property name.
+
+23. ### In object, property names are always in whih type? If you use another type what will happen?
+
+In objects, property names are always strings. If you use any other value besides a string (primitive) as the property, it will first be converted to a string. This even includes numbers, which are commonly used as array indexes, so be careful not to confuse the use of numbers between objects and arrays.
+
+24. ### Explain
 
 ```javascript
 var myObject = {};
@@ -103,9 +121,27 @@ myObject["3"]; // ?
 myObject["[object object]"]; // ?
 ```
 
-25. What's computed property names?
-26. The most common usage of computed property names?
-27.
+25. ### What's computed property names?
+
+ES6 adds *computed property names*, where you can specify an expression, surrounded by a `[ ]` pair, in the key-name position of an object-literal declaration:
+
+```jsx
+var prefix = "foo";
+
+var myObject = {
+    [prefix + "bar"]: "hello",
+    [prefix + "baz"]: "world",
+};
+
+myObject["foobar"]; // hello
+myObject["foobaz"]; // world
+```
+
+26. ### The most common usage of computed property names?
+
+The most common usage of computed property names will probably be for ES6 Symbols. They're a new primitive data type which has an opaque unguessable value (technically a string value). You will be strongly discouraged from working with the actual value of a Symbol (which can theoretically be different between different JS engines), so the name of the Symbol, like Symbol.Something (just a made up name!), will be what you use:
+
+27. ### Explain
 
 ```javascript
 var prefix = "foo";
@@ -117,11 +153,23 @@ myObject["foobar"]; // ?
 myObject["foobaz"]; // ?
 ```
 
-28. What is array?
-29. Whuch access form arrays use?
-30. In Array, values strored in which location?
-31. What is rray indexing ?
-32.
+28. ### What is array?
+
+Arrays also use the `[ ]` access form, but as mentioned above, they have slightly more structured organization for how and where values are stored.
+
+Arrays assume *numeric indexing*, which means that values are stored in locations, usually called *indices*, at non-negative integers, such as `0` and `42`.
+
+29. ### Which access form arrays use?
+
+Arrays also use the `[ ]` access form
+
+30. ### In Array, values strored in which location?
+    Arrays assume numeric indexing, which means that values are stored in locations, usually called indices, at non-negative integers, such as 0 and 42.
+31. ### What is array indexing ?
+
+Arrays assume numeric indexing, which means that values are stored in locations, usually called indices, at non-negative integers, such as 0 and 42.
+
+32. ### Explain
 
 ```javascript
 var myArray = ["foo", 42, "bar"];
@@ -130,7 +178,8 @@ myArray[0]; // ?
 myArray[2]; // ?
 ```
 
-33. Can you add properties to array? why?
+33. ### Can you add properties to array? why?
+    Arrays are objects, so even though each index is a positive integer, you can also add properties onto the array
 34. Adding named properties does change reported length of array?
 35. Could you use an array as a plain key/value object? is it good idea? why?
 36. If you try to add a property to an array but the property name looks like a number, what will happen?
