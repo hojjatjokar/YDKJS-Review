@@ -180,16 +180,37 @@ myArray[2]; // ?
 
 33. ### Can you add properties to array? why?
     Arrays are objects, so even though each index is a positive integer, you can also add properties onto the array
-34. Adding named properties does change reported length of array?
-35. Could you use an array as a plain key/value object? is it good idea? why?
-36. If you try to add a property to an array but the property name looks like a number, what will happen?
-37.
+34. ### Adding named properties does change reported length of array?
+
+Notice that adding named properties (regardless of . or [ ] operator syntax) does not change the reported length of the array.
+
+35. ### Could you use an array as a plain key/value object? is it good idea? why?
+
+You could use an array as a plain key/value object, and never add any numeric indices, but this is a bad idea because arrays have behavior and optimizations specific to their intended use, and likewise with plain objects. Use objects to store key/value pairs, and arrays to store values at numeric indices.
+
+36. ### If you try to add a property to an array but the property name looks like a number, what will happen?
+
+If you try to add a property to an array, but the property name looks like a number, it will end up instead as a numeric index (thus modifying the array contents)
+
+37. ### Explain
 
 ```javascript
 var myArray = ["foo", 42, "bar"];
 myArray.baz = "baz";
 myArray.length; // ?
 myArray.baz; // ?
+```
+
+Answer:
+
+```javascript
+var myArray = ["foo", 42, "bar"];
+
+myArray.baz = "baz";
+
+myArray.length; // 3
+
+myArray.baz; // "baz"
 ```
 
 38.
@@ -201,8 +222,23 @@ myArray.length; // ?
 myArray[3]; // ?
 ```
 
+Answer:
+
+```javascript
+var myArray = ["foo", 42, "bar"];
+
+myArray["3"] = "baz";
+
+myArray.length; // 4
+
+myArray[3]; // "baz"
+```
+
 39. How to copy objects in JS?
-40. How **Object.assign** works?
+40. ### How **Object.assign** works?
+
+`Object.assign(..)` takes a target object as its first parameter, and one or more source objects as its subsequent parameters. It iterates over all the enumerable, owned keys (immediately present) on the source object(s) and copies them (via = assignment only) to target.
+
 41. **Object.assign** is shallow or deep copy?
 42. In general what way is there to copy obj?
 43. What's deep copy object problems? (2)
