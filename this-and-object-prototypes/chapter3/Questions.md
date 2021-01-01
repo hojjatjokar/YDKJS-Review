@@ -213,7 +213,7 @@ myArray.length; // 3
 myArray.baz; // "baz"
 ```
 
-38.
+38. ### Explain
 
 ```javascript
 var myArray = ["foo", 42, "bar"];
@@ -234,24 +234,88 @@ myArray.length; // 4
 myArray[3]; // "baz"
 ```
 
-39. How to copy objects in JS?
+39. ### How to copy objects in JS?
+
+Using Object.assign
+
 40. ### How **Object.assign** works?
 
 `Object.assign(..)` takes a target object as its first parameter, and one or more source objects as its subsequent parameters. It iterates over all the enumerable, owned keys (immediately present) on the source object(s) and copies them (via = assignment only) to target.
 
-41. **Object.assign** is shallow or deep copy?
-42. In general what way is there to copy obj?
-43. What's deep copy object problems? (2)
-44. Infinit circulation problem what decision we must take?
-45. Is There a way for copy a function?
-46. Explain JSON safe object copy?
-47. In Object.assign what will happen to property descriptor?
-48. What's property descriptor?
-49. How to get property descriptor for specified property in object?
-50. What property descriptor includes?
-51. What is property descriptor characteristics default values ?
-52. **Object.define** property? new property or modify eexisting? on existing it will fail in which situations?
-53.
+41. ### `Object.assign` is shallow or deep copy?
+
+shallow
+
+42. ### In general what way is there to copy obj?
+
+We should answer if it should be a *shallow* or *deep* copy. A *shallow copy* would end up with `a` on the new object as a copy of the value `2`, but `b`, `c`, and `d` properties as just references to the same places as the references in the original object.
+
+A *deep copy* would duplicate not only `myObject`, but `anotherObject` and `anotherArray`. But then we have issues that `anotherArray` has references to `anotherObject` and `myObject` in it, so *those* should also be duplicated rather than reference-preserved. Now we have an infinite circular duplication problem because of the circular reference.
+
+43. ### What's deep copy object problems? (2)
+
+Should we detect a circular reference and just break the circular traversal (leaving the deep element not fully duplicated)? Should we error out completely? Something in between?
+
+Moreover, it's not really clear what "duplicating" a function would mean? There are some hacks like pulling out the `toString()` serialization of a function's source code (which varies across implementations and is not even reliable in all engines depending on the type of function being inspected).
+
+44. ### Infinit circulation problem what decision we must take?
+
+Should we detect a circular reference and just break the circular traversal (leaving the deep element not fully duplicated)? Should we error out completely? Something in between?
+
+45. ### Is There a way for copy a function?
+
+Moreover, it's not really clear what "duplicating" a function would mean? There are some hacks like pulling out the toString() serialization of a function's source code (which varies across implementations and is not even reliable in all engines depending on the type of function being inspected).
+
+46. ### Explain JSON safe object copy?
+
+One subset solution is that objects which are JSON-safe (that is, can be serialized to a JSON string and then re-parsed to an object with the same structure and values) can easily be *duplicated* with:
+
+`var newObj = JSON.parse( JSON.stringify( someObj ) );`
+
+Of course, that requires you to ensure your object is JSON safe. For some situations, that's trivial. For others, it's insufficient.
+
+47. ### In Object.assign what will happen to property descriptor?
+
+The duplication that occurs for Object.assign(..) however is purely = style assignment, so any special characteristics of a property (like writable) on a source object are not preserved on the target object.
+
+48. ### What's property descriptor?
+
+property characteristics
+
+49. ## How to get property descriptor for specified property in object?
+
+```
+Object.getOwnPropertyDescriptor( myObject, "a" );
+// {
+//    value: 2,
+//    writable: true,
+//    enumerable: true,
+//    configurable: true
+// }
+```
+
+50. ### What property descriptor includes?
+
+    It includes 3 other characteristics: writable, enumerable, and configurable.
+
+51. ### What is property descriptor characteristics default values ?
+
+```
+{
+	...
+	writable: true,
+	configurable: true,
+	enumerable: true
+}
+```
+
+52. ### What is Object.defineProperty? It adds new property or modifies an existing one? on existing, it will fail in which situations?
+
+We can use `Object.defineProperty(..)` to add a new property or modify an existing one (if it's `configurable`!), with the desired characteristics.
+
+Using `defineProperty(..)`, we added the plain, normal `a` property to `myObject` in a manually explicit way.
+
+53. ### Explain
 
 ```javascript
 var myObject = {};
@@ -264,9 +328,13 @@ Object.defineProperty(myObject, "a", {
 myObject.a; // ?
 ```
 
-54. Generally when we use defineProperty?
-55. Writable characteristict?
-56.
+54. ### Generally when we use defineProperty?
+
+You generally wouldn't use this manual approach unless you wanted to modify one of the descriptor characteristics from its normal behavior.
+
+55. ### Writable characteristict?
+
+56. ### Explain
 
 ```javascript
 var myObject = {};
