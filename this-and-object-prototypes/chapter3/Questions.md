@@ -332,8 +332,8 @@ myObject.a; // ?
 
 You generally wouldn't use this manual approach unless you wanted to modify one of the descriptor characteristics from its normal behavior.
 
-55. ### Writable characteristict?
-
+55. ### What's `writable` characteristict?
+    The ability for you to change the value of a property is controlled by `writable`.
 56. ### Explain
 
 ```javascript
@@ -348,12 +348,32 @@ myObject.a = 3;
 myObject.a; // ?
 ```
 
-57. If we try to change a non-writable property what will happen? in strict-mode what happen?
-58. Configurable?
-59. Configurable exception about writable?
-60. **configurable: false** and **delete** operator?
-61. If an object propertyy is the last remaining reference to some object/function, and you delete it, what will happen?
-62. Enumerable?
+57. ### If we try to change a non-writable property what will happen? in strict-mode what happen?
+    Modification of the value silently fails. If we try in strict mode, we get an error
+58. ### Whta's configurable?
+
+    As long as a property is currently configurable, we can modify its descriptor definition, using the same `defineProperty(..)` utility.
+
+    `defineProperty(..)` call results in a TypeError, regardless of `strict mode`, if you attempt to change the descriptor definition of a non-configurable property.
+
+    Be careful: as you can see, changing `configurable` to `false` is a **one-way action, and cannot be undone!**
+
+59. ### Configurable exception about writable?
+    There's a nuanced exception to be aware of: even if the property is already configurable:false, writable can always be changed from true to false without error, but not back to true if already false.
+60. ### **configurable: false** and **delete** operator?
+
+Another thing configurable:false prevents is the ability to use the delete operator to remove an existing property.
+
+61. ### If an object propertyy is the last remaining reference to some object/function, and you delete it, what will happen?
+
+If an object property is the last remaining reference to some object/function, and you delete it, that removes the reference and now that unreferenced object/function can be garbage collected. But, it is not proper to think of delete as a tool to free up allocated memory as it does in other languages (like C/C++). delete is just an object property removal operation -- nothing more.
+
+62. ### What's enumerable?
+
+The name probably makes it obvious, but this characteristic controls if a property will show up in certain object-property enumerations, such as the `for..in` loop. Set to `false` to keep it from showing up in such enumerations, even though it's still completely accessible. Set to `true` to keep it present.
+
+All normal user-defined properties are defaulted to `enumerable`, as this is most commonly what you want. But if you have a special property you want to hide from enumeration, set it to `enumerable:false`.
+
 63. Immutability?
 64. Immutability in which ways?
 65. All this approaches are shallow or deep immutability?
