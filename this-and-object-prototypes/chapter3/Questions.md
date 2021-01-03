@@ -284,15 +284,15 @@ property characteristics
 
 49. ## How to get property descriptor for specified property in object?
 
-```
-Object.getOwnPropertyDescriptor( myObject, "a" );
-// {
-//    value: 2,
-//    writable: true,
-//    enumerable: true,
-//    configurable: true
-// }
-```
+    ```javascript
+    Object.getOwnPropertyDescriptor(myObject, "a");
+    // {
+    //    value: 2,
+    //    writable: true,
+    //    enumerable: true,
+    //    configurable: true
+    // }
+    ```
 
 50. ### What property descriptor includes?
 
@@ -374,14 +374,38 @@ The name probably makes it obvious, but this characteristic controls if a proper
 
 All normal user-defined properties are defaulted to `enumerable`, as this is most commonly what you want. But if you have a special property you want to hide from enumeration, set it to `enumerable:false`.
 
-63. Immutability?
-64. Immutability in which ways?
-65. All this approaches are shallow or deep immutability?
-66. What's "shallow immutability" means?
-67. What's object consonant? and what can or can't happen to obejct property?
-68. If you want to prevent an object from having new properties ?
-69. **Object.preventExtensions**?
-70. Explain?
+63. ### What's Immutability?
+
+It is sometimes desired to make properties or objects that cannot be changed (either by accident or intentionally). ES5 adds support for handling that in a variety of different nuanced ways.
+
+64. ### How many ways are available for immutability?
+
+-   Object Constant
+-   Object.preventExtensions
+-   Object.seal
+-   Object.freeze
+
+65. ### All this approaches are shallow or deep immutability?
+
+It's important to note that all of these approaches create shallow immutability.
+
+66. ### What's "shallow immutability" means?
+
+It's important to note that all of these approaches create shallow immutability. That is, they affect only the object and its direct property characteristics. If an object has a reference to another object (array, object, function, etc), the contents of that object are not affected, and remain mutable.
+
+67. ### What's object consonant? and what can or can't happen to obejct property?
+
+By combining writable:false and configurable:false, you can essentially create a constant (cannot be changed, redefined or deleted) as an object property
+
+68. ### If you want to prevent an object from having new properties ?
+
+Object.preventExtensions
+
+69. ### `Object.preventExtensions`?
+
+If you want to prevent an object from having new properties added to it, but otherwise leave the rest of the object's properties alone, call `Object.preventExtensions(..)`
+
+70. ### Explain?
 
 ```javascript
 var myObject = {
@@ -393,8 +417,16 @@ myObject.b; // normal mode ?
 // use strict ?
 ```
 
-71. Object.seal();
-72. Object.freeze();
+71. ### Whats `Object.seal()`?
+
+`Object.seal(..)` creates a "sealed" object, which means it takes an existing object and essentially calls `Object.preventExtensions(..)` on it, but also marks all its existing properties as `configurable:false`.
+
+So, not only can you not add any more properties, but you also cannot reconfigure or delete any existing properties (though you *can* still modify their values).
+
+72. ### What's `Object.freeze()`?
+
+Object.freeze(..) creates a frozen object, which means it takes an existing object and essentially calls Object.seal(..) on it, but it also marks all "data accessor" properties as writable:false, so that their values cannot be changed.
+
 73. [[GET]]
 74. Property access actually perform what?
 75. If [[GET]] operation cannot come up with a value for the requested property what return?
