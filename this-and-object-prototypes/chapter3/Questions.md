@@ -427,10 +427,21 @@ So, not only can you not add any more properties, but you also cannot reconfigur
 
 Object.freeze(..) creates a frozen object, which means it takes an existing object and essentially calls Object.seal(..) on it, but it also marks all "data accessor" properties as writable:false, so that their values cannot be changed.
 
-73. [[GET]]
-74. Property access actually perform what?
-75. If [[GET]] operation cannot come up with a value for the requested property what return?
-76. consider:
+73. ### What is [[GET]]?
+
+According to the spec, `myObject.a` actually performs a `[[Get]]` operation (kinda like a function call: `[[Get]]()`) on the `myObject`. The default built-in `[[Get]]` operation for an object *first* inspects the object for a property of the requested name, and if it finds it, it will return the value accordingly.
+
+However, the `[[Get]]` algorithm defines other important behavior if it does *not* find a property of the requested name. Traversal of the `[[Prototype]]` chain, if any.
+
+74. ### Property access actually perform what?
+
+Performs a [[Get]] operation (kinda like a function call: [[Get]]())
+
+75. ### If [[GET]] operation cannot come up with a value for the requested property what return?
+
+If it cannot through any means come up with a value for the requested property, it instead returns the value undefined.
+
+76. ### Consider:
 
 ```javascript
 var myObject = {
@@ -445,13 +456,47 @@ myObject.b; // ?
     - Can you distinguish whether property exist and holds the explicit value of **undefined** or whether the property does not exist with inspecting only the result?
     - How can you distinguish these two scenario?
 
-77. When invoking [[put]], how it behaves?
-78. If the property is present on the object, the [[put]] what will do?
-79. What's getters and setters are in property level or object level?
-80. What's Getters and Setters?
-81. When you define a prperty to have either a getter or setter or both, it's definition becomes what?
-82. For accessor-descriptor, the value and writable characteristics will be what?
-83. Consideer:
+    a. None
+    b.  The `[[Get]]` operation underneath, though subtle at a glance, potentially performed a bit more "work" for the reference `myObject.b` than for the reference `myObject.a`.
+    c. Inspecting only the value results, you cannot distinguish whether a property exists and holds the explicit value `undefined`, or whether the property does *not* exist and `undefined` was the default return value after `[[Get]]` failed to return something explicitly.
+
+77. ### When invoking [[Put]], how it behaves?
+
+    When invoking `[[Put]]`, how it behaves differs based on a number of factors, including whether the property is already present on the object or not.
+
+    If the property is present, the `[[Put]]` algorithm will roughly check:
+
+    a. Is the property an accessor descriptor? **If so, call the setter, if any.**
+    b. Is the property a data descriptor with `writable` of `false`? **If so, silently fail in `non-strict mode`, or throw `TypeError` in `strict mode`.**
+    c. Otherwise, set the value to the existing property as normal.
+
+    If the property is not yet present on the object in question, the `[[Put]]` operation is even more nuanced and complex. We will revisit this scenario in Chapter 5 when we discuss `[[Prototype]]` to give it more clarity.
+
+78. ### If the property is present on the object, the [[put]] what will do?
+
+    If the property is present, the `[[Put]]` algorithm will roughly check:
+
+    1. Is the property an accessor descriptor? **If so, call the setter, if any.**
+    2. Is the property a data descriptor with `writable` of `false`? **If so, silently fail in `non-strict mode`, or throw `TypeError` in `strict mode`.**
+    3. Otherwise, set the value to the existing property as normal.
+
+79. ### What's getters and setters are in property level or object level?
+
+If the property is not yet present on the object in question, the [[Put]] operation is even more nuanced and complex. We will revisit this scenario in Chapter 5 when we discuss [[Prototype]] to give it more clarity.
+
+80. ### What's Getters and Setters?
+
+The default [[Put]] and [[Get]] operations for objects completely control how values are set to existing or new properties, or retrieved from existing properties, respectively.
+
+81. ### When you define a prperty to have either a getter or setter or both, it's definition becomes what?
+
+When you define a property to have either a getter or a setter or both, its definition becomes an "accessor descriptor" (as opposed to a "data descriptor"). For accessor-descriptors, the value and writable characteristics of the descriptor are moot and ignored, and instead JS considers the set and get characteristics of the property (as well as configurable and enumerable).
+
+82. ### For accessor-descriptor, the value and writable characteristics will be what?
+
+For accessor-descriptors, the value and writable characteristics of the descriptor are moot and ignored, and instead JS considers the set and get characteristics of the property (as well as configurable and enumerable).
+
+83. Consider:
 
 ```javascript
 var myObject = {
@@ -469,8 +514,32 @@ myObject.a; // ?
 myObject.b; // ?
 ```
 
-84. How to set getters and setters in literal syntax or with defineProperty?
-85. Explain
+Either through object-literal syntax with `get a() { .. }` or through explicit definition with `defineProperty(..)`, in both cases we created a property on the object that actually doesn't hold a value, but whose access automatically results in a hidden function call to the getter function, with whatever value it returns being the result of the property access.
+
+84. ### How to set getters and setters in literal syntax or with defineProperty?
+
+```
+var myObject = {
+	// define a getter for `a`
+	get a() {
+		return 2;
+	}
+};
+
+Object.defineProperty(
+	myObject,	// target
+	"b",		// property name
+	{			// descriptor
+		// define a getter for `b`
+		get: function(){ return this.a * 2 },
+
+		// make sure `b` shows up as an object property
+		enumerable: true
+	}
+);
+```
+
+85. ### Explain
 
 ```javascript
 myObject = {
@@ -482,8 +551,9 @@ myObject.a = 3;
 myObject.a; // ?
 ```
 
-86. Setter will override what?
-87. Explain
+86. ### Setter will override what?
+    Override the default `[[Put]]` operation (aka, assignment)
+87. ### Explain
 
 ```javascript
     var myObject = {
@@ -498,10 +568,20 @@ myObject.a; // ?
     myObject.a; // ?
 ```
 
-88. How to check property existance?
-89. What's difference between **in** operator and **hasOwnProperty**>
-90. What's enumerable means?
-91. Explain:
+Note: In this example, we actually store the specified value 2 of the assignment ([[Put]] operation) into another variable *a*. The *a* name is purely by convention for this example and implies nothing special about its behavior -- it's a normal property like any other.
+
+88. ### How to check property existance?
+
+The `in` operator will
+
+`hasOwnProperty(..)`
+
+89. ### What's difference between **in** operator and **hasOwnProperty**?
+
+    The in operator will check to see if the property is in the object, or if it exists at any higher level of the [[Prototype]] chain object traversal. By contrast, hasOwnProperty(..) checks to see if only myObject has the property or not, and will not consult the [[Prototype]] chain.
+
+90. ### What's enumerable means?
+91. ### Explain:
 
 ```javascript
 myObject = {};
