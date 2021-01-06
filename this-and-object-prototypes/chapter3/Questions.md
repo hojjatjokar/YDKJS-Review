@@ -601,16 +601,42 @@ for (let k in myObject) {
 }
 ```
 
-92. propertyIsEnumerable?
-93. keys();
-94. getOwnPropertyNames?
-95. What's difference between **keys()** and getOwnPropertyNames?
-96. Is there built-in way to get a list of all properties which equivalent to what the **in** operator test would consult? how you can get manually?
-97. for ... in ?
-98. Iterating over the values typically done with a standard for loop in arrays?
-99. Difference between forEach, every(...), some()?
-100.    **for...of**? How it works?
-101.
+`propertyIsEnumerable(..)` tests whether the given property name exists *directly* on the object and is also `enumerable:true`.
+
+`Object.keys(..)` returns an array of all enumerable properties, whereas `Object.getOwnPropertyNames(..)` returns an array of *all* properties, enumerable or not.
+
+Whereas `in` vs. `hasOwnProperty(..)` differ in whether they consult the `[[Prototype]]` chain or not, `Object.keys(..)` and `Object.getOwnPropertyNames(..)` both inspect *only* the direct object specified.
+
+There's (currently) no built-in way to get a list of **all properties** which is equivalent to what the `in` operator test would consult (traversing all properties on the entire `[[Prototype]]` chain, as explained in Chapter 5). You could approximate such a utility by recursively traversing the `[[Prototype]]` chain of an object, and for each level, capturing the list from `Object.keys(..)` -- only enumerable properties.
+
+92. ### What does `propertyIsEnumerable` do?
+    `propertyIsEnumerable(..)` tests whether the given property name exists directly on the object and is also enumerable:true.
+93. ### What does `keys()` do?
+    `Object.keys(..)` returns an array of all enumerable properties, whereas Object.getOwnPropertyNames(..) returns an array of all properties, enumerable or not.
+94. ### What does getOwnPropertyNames do?
+    `Object.getOwnPropertyNames(..)` returns an array of all properties, enumerable or not.
+95. ### What's difference between **keys()** and getOwnPropertyNames?
+
+    Whereas `in` vs. `hasOwnProperty(..)` differ in whether they consult the `[[Prototype]]` chain or not, `Object.keys(..)` and `Object.getOwnPropertyNames(..)` both inspect only the direct object specified.
+
+96. ### Is there built-in way to get a list of all properties which equivalent to what the **in** operator test would consult? how you can get manually?
+    There's (currently) no built-in way to get a list of all properties which is equivalent to what the in operator test would consult. You could approximate such a utility by recursively traversing the [[Prototype]] chain of an object, and for each level, capturing the list from Object.keys(..) -- only enumerable properties.
+97. ### What is `for..in` ?
+    The `for..in` loop iterates over the list of enumerable properties on an object (including its [[Prototype]] chain). But what if you instead want to iterate over the values?
+98. ### Iterating over the values typically done with a standard for loop in arrays?
+    With numerically-indexed arrays, iterating over the values is typically done with a standard for loop
+99. ### Difference between `forEach`, `every(...)`, `some()`?
+
+`forEach(..)` will iterate over all values in the array, and ignores any callback return values. `every(..)` keeps going until the end *or* the callback returns a `false` (or "falsy") value, whereas `some(..)` keeps going until the end *or* the callback returns a `true` (or "truthy") value.
+
+These special return values inside `every(..)` and `some(..)` act somewhat like a `break` statement inside a normal `for` loop, in that they stop the iteration early before it reaches the end.
+
+100. ### `for...of`? How it works?
+     Iterate over the values directly instead of the array indices (or object properties).
+
+The `for..of` loop asks for an iterator object (from a default internal function known as `@@iterator` in spec-speak) of the *thing* to be iterated, and the loop then iterates over the successive return values from calling that iterator object's `next()` method, once for each loop iteration.
+
+101. ### Explain?
 
 ```javascript
 var myArray = [1, 2, 3];
@@ -619,7 +645,9 @@ for (var v of myArray) {
 }
 ```
 
-102.
+The for..of loop asks for an iterator object (from a default internal function known as @@iterator in spec-speak) of the thing to be iterated, and the loop then iterates over the successive return values from calling that iterator object's next() method, once for each loop iteration.
+
+102. ### Explain?
 
 ```javascript
 var myArray = [1, 2, 3];
@@ -631,5 +659,15 @@ it.next(); // ?
 it.next(); // ?
 ```
 
-103. **@@iterator**?
-104. The return value from an iterator's **next()** call is what? What includes?
+Arrays have a built-in `@@iterator`, so `for..of` works easily on them, as shown. But let's manually iterate the array, using the built-in `@@iterator`, to see how it works:
+
+**Note:** We get at the `@@iterator` *internal property* of an object using an ES6 `Symbol`: `Symbol.iterator`.
+
+As the above snippet reveals, the return value from an iterator's `next()` call is an object of the form `{ value: .. , done: .. }`, where `value` is the current iteration value, and `done` is a `boolean` that indicates if there's more to iterate.
+
+Notice the value `3` was returned with a `done:false`, which seems strange at first glance. You have to call the `next()` a fourth time (which the `for..of` loop in the previous snippet automatically does) to get `done:true` and know you're truly done iterating. The reason for this quirk is beyond the scope of what we'll discuss here, but it comes from the semantics of ES6 generator functions.
+
+103. ### `@@iterator`?
+     `@@iterator` is not the iterator object itself, but a function that returns the iterator object -- a subtle but important detail!
+104. ### The return value from an iterator's `next()` call is what? What includes?
+     The return value from an iterator's next() call is an object of the form `{ value: .. , done: .. }`, where value is the current iteration value, and done is a boolean that indicates if there's more to iterate.
