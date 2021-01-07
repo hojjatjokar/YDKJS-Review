@@ -1,11 +1,11 @@
 1. ### Objects comes in what forms?
-    Objects come in two forms: the declarative (literal) form, and the constructed form.
+   Objects come in two forms: the declarative (literal) form, and the constructed form.
 2. ### Example of literal syntax for object?
 
 ```javascript
 var myObj = {
-    key: value,
-    // ...
+  key: value,
+  // ...
 };
 ```
 
@@ -28,20 +28,20 @@ It's extremely uncommon to use the "constructed form" for creating objects as ju
 
 Objects are the general building block upon which much of JS is built. They are one of the 6 primary types (called "language types" in the specification) in JS:
 
--   `string`
--   `number`
--   `boolean`
--   `null`
--   `undefined`
--   `object`
+- `string`
+- `number`
+- `boolean`
+- `null`
+- `undefined`
+- `object`
 
 7. ### `null` is object types?
 
-null is sometimes referred to as an object type, but this misconception stems from a bug in the language which causes typeof null to return the string "object" incorrectly (and confusingly). In fact, null is its own primitive type.
+`null` is sometimes referred to as an object type, but this misconception stems from a bug in the language which causes `typeof null` to return the string "object" incorrectly (and confusingly). In fact, `null` is its own primitive type.
 
 8. ### Object sub-types (built-in objects)?
 
-By contrast, there *are* a few special object sub-types, which we can refer to as *complex primitives*.
+By contrast, there are a few special object sub-types, which we can refer to as *complex primitives*.
 
 `function` is a sub-type of object (technically, a "callable object"). Functions in JS are said to be "first class" in that they are basically just normal objects (with callable behavior semantics bolted on), and so they can be handled like any other plain object.
 
@@ -53,7 +53,7 @@ Functions in JS are said to be "first class" in that they are basically just nor
 
 10. ### Functions are objects? What they have more than object?
 
-function is a sub-type of object. Functions in JS are said to be "first class" in that they are basically just normal objects (with callable behavior semantics bolted on), and so they can be handled like any other plain object.
+`function` is a sub-type of `object`. Functions in JS are said to be "first class" in that they are basically just normal objects (with callable behavior semantics bolted on), and so they can be handled like any other plain object.
 
 11. ### Arrays are objects? What they have more than object?
 
@@ -75,19 +75,19 @@ There are a few special object sub-types, which we can refer to as complex pr
 
 15. ### Date have literal form or constructed form?
 
-Date values can only be created with their constructed object form, as they have no literal form counter-part.
+    Date values can only be created with their constructed object form, as they have no literal form counter-part.
 
 16. ### What's difference between two form of creating objects, arrays, functions and RegExp? Which is more prefered?
 
-`Object`s, `Array`s, `Function`s, and `RegExp`s (regular expressions) are all objects regardless of whether the literal or constructed form is used. The constructed form does offer, in some cases, more options in creation than the literal form counterpart. Since objects are created either way, the simpler literal form is almost universally preferred. **Only use the constructed form if you need the extra options.**
+    `Object`s, `Array`s, `Function`s, and `RegExp`s (regular expressions) are all objects regardless of whether the literal or constructed form is used. The constructed form does offer, in some cases, more options in creation than the literal form counterpart. Since objects are created either way, the simpler literal form is almost universally preferred. **Only use the constructed form if you need the extra options.**
 
-17. ### Error objects created in which way most? How can we create?
+17. ### which way Error objects created in most? How can we create?
 
 Error objects are rarely created explicitly in code, but usually created automatically when exceptions are thrown. They can be created with the constructed form new Error(..), but it's often unnecessary.
 
 18. ### Content of an object consist of what?
 
-The contents of an object consist of values (any type) stored at specifically named locations, which we call properties.
+The contents of an `object` consist of values (any type) stored at specifically named locations, which we call properties.
 
 19. ### How engin store object values? inside object? What is stored object container? property names act as what?
 
@@ -103,11 +103,11 @@ the `.` operator
 
 22. ### What's difference between two method of acessing?
 
-The main difference between the two syntaxes is that the . operator requires an Identifier compatible property name after it, whereas the [".."] syntax can take basically any UTF-8/unicode compatible string as the name for the property. To reference a property of the name "Super-Fun!", for instance, you would have to use the ["Super-Fun!"] access syntax, as Super-Fun! is not a valid Identifier property name.
+The main difference between the two syntaxes is that the `.` operator requires an Identifier compatible property name after it, whereas the `[".."]` syntax can take basically any `UTF-8/unicode` compatible string as the name for the property. To reference a property of the name "Super-Fun!", for instance, you would have to use the `["Super-Fun!"]` access syntax, as Super-Fun! is not a valid Identifier property name.
 
 23. ### In object, property names are always in whih type? If you use another type what will happen?
 
-In objects, property names are always strings. If you use any other value besides a string (primitive) as the property, it will first be converted to a string. This even includes numbers, which are commonly used as array indexes, so be careful not to confuse the use of numbers between objects and arrays.
+In objects, property names are always strings. If you use any other value besides a string (primitive) as the property, it will first be converted to a `string`. This even includes numbers, which are commonly used as array indexes, so be careful not to confuse the use of numbers between objects and arrays.
 
 24. ### Explain
 
@@ -129,8 +129,8 @@ ES6 adds *computed property names*, where you can specify an expression, surrou
 var prefix = "foo";
 
 var myObject = {
-    [prefix + "bar"]: "hello",
-    [prefix + "baz"]: "world",
+  [prefix + "bar"]: "hello",
+  [prefix + "baz"]: "world",
 };
 
 myObject["foobar"]; // hello
@@ -139,15 +139,15 @@ myObject["foobaz"]; // world
 
 26. ### The most common usage of computed property names?
 
-The most common usage of computed property names will probably be for ES6 Symbols. They're a new primitive data type which has an opaque unguessable value (technically a string value). You will be strongly discouraged from working with the actual value of a Symbol (which can theoretically be different between different JS engines), so the name of the Symbol, like Symbol.Something (just a made up name!), will be what you use:
+The most common usage of computed property names will probably be for ES6 `Symbol`s. They're a new primitive data type which has an opaque unguessable value (technically a string value). You will be strongly discouraged from working with the actual value of a `Symbol` (which can theoretically be different between different JS engines), so the name of the `Symbol`, like `Symbol.Something` (just a made up name!), will be what you use:
 
 27. ### Explain
 
 ```javascript
 var prefix = "foo";
 var myObject = {
-    [prefix + "bar"]: "hello",
-    [prefix + "baz"]: "world",
+  [prefix + "bar"]: "hello",
+  [prefix + "baz"]: "world",
 };
 myObject["foobar"]; // ?
 myObject["foobaz"]; // ?
@@ -167,7 +167,7 @@ Arrays also use the `[ ]` access form
     Arrays assume numeric indexing, which means that values are stored in locations, usually called indices, at non-negative integers, such as 0 and 42.
 31. ### What is array indexing ?
 
-Arrays assume numeric indexing, which means that values are stored in locations, usually called indices, at non-negative integers, such as 0 and 42.
+Arrays assume numeric indexing, which means that values are stored in locations, usually called indices, at non-negative integers, such as ‍‍0 and 42.
 
 32. ### Explain
 
@@ -236,7 +236,7 @@ myArray[3]; // "baz"
 
 39. ### How to copy objects in JS?
 
-Using Object.assign
+Using `Object.assign`
 
 40. ### How **Object.assign** works?
 
@@ -256,7 +256,7 @@ A *deep copy* would duplicate not only `myObject`, but `anotherObject` and�
 
 Should we detect a circular reference and just break the circular traversal (leaving the deep element not fully duplicated)? Should we error out completely? Something in between?
 
-Moreover, it's not really clear what "duplicating" a function would mean? There are some hacks like pulling out the `toString()` serialization of a function's source code (which varies across implementations and is not even reliable in all engines depending on the type of function being inspected).
+Moreover, it's not really clear what "duplicating" a function would mean? There are some hacks like pulling out the `toString()` serialization of a `function`'s source code (which varies across implementations and is not even reliable in all engines depending on the type of `function` being inspected).
 
 44. ### Infinit circulation problem what decision we must take?
 
@@ -276,7 +276,7 @@ Of course, that requires you to ensure your object is JSON safe. For some situat
 
 47. ### In Object.assign what will happen to property descriptor?
 
-The duplication that occurs for Object.assign(..) however is purely = style assignment, so any special characteristics of a property (like writable) on a source object are not preserved on the target object.
+The duplication that occurs for `Object.assign(..)` however is purely = style assignment, so any special characteristics of a property (like writable) on a source object are not preserved on the target object.
 
 48. ### What's property descriptor?
 
@@ -300,7 +300,7 @@ property characteristics
 
 51. ### What is property descriptor characteristics default values ?
 
-```
+```javascript
 {
 	...
 	writable: true,
@@ -309,7 +309,7 @@ property characteristics
 }
 ```
 
-52. ### What is Object.defineProperty? It adds new property or modifies an existing one? on existing, it will fail in which situations?
+52. ### What is `Object.defineProperty`? It adds new property or modifies an existing one? on existing, it will fail in which situations?
 
 We can use `Object.defineProperty(..)` to add a new property or modify an existing one (if it's `configurable`!), with the desired characteristics.
 
@@ -320,10 +320,10 @@ Using `defineProperty(..)`, we added the plain, normal `a` property to `myOb
 ```javascript
 var myObject = {};
 Object.defineProperty(myObject, "a", {
-    value: 2,
-    writable: true,
-    configurable: true,
-    enumerable: true,
+  value: 2,
+  writable: true,
+  configurable: true,
+  enumerable: true,
 });
 myObject.a; // ?
 ```
@@ -339,10 +339,10 @@ You generally wouldn't use this manual approach unless you wanted to modify one 
 ```javascript
 var myObject = {};
 Object.defineProperty(myObject, "a", {
-    value: 2,
-    writable: false,
-    configurable: true,
-    enumerable: true,
+  value: 2,
+  writable: false,
+  configurable: true,
+  enumerable: true,
 });
 myObject.a = 3;
 myObject.a; // ?
@@ -353,18 +353,16 @@ myObject.a; // ?
 58. ### Whta's configurable?
 
     As long as a property is currently configurable, we can modify its descriptor definition, using the same `defineProperty(..)` utility.
-
     `defineProperty(..)` call results in a TypeError, regardless of `strict mode`, if you attempt to change the descriptor definition of a non-configurable property.
-
     Be careful: as you can see, changing `configurable` to `false` is a **one-way action, and cannot be undone!**
 
 59. ### Configurable exception about writable?
-    There's a nuanced exception to be aware of: even if the property is already configurable:false, writable can always be changed from true to false without error, but not back to true if already false.
-60. ### **configurable: false** and **delete** operator?
+    There's a nuanced exception to be aware of: even if the property is already `configurable:false`, writable can always be changed from true to false without error, but not back to true if already false.
+60. ### `configurable: false` and `delete` operator?
 
-Another thing configurable:false prevents is the ability to use the delete operator to remove an existing property.
+Another thing `configurable:false` prevents is the ability to use the delete operator to remove an existing property.
 
-61. ### If an object propertyy is the last remaining reference to some object/function, and you delete it, what will happen?
+61. ### If an object property is the last remaining reference to some object/function, and you delete it, what will happen?
 
 If an object property is the last remaining reference to some object/function, and you delete it, that removes the reference and now that unreferenced object/function can be garbage collected. But, it is not proper to think of delete as a tool to free up allocated memory as it does in other languages (like C/C++). delete is just an object property removal operation -- nothing more.
 
@@ -380,10 +378,10 @@ It is sometimes desired to make properties or objects that cannot be changed (ei
 
 64. ### How many ways are available for immutability?
 
--   Object Constant
--   Object.preventExtensions
--   Object.seal
--   Object.freeze
+- Object Constant
+- `Object.preventExtensions`
+- `Object.seal`
+- `Object.freeze`
 
 65. ### All this approaches are shallow or deep immutability?
 
@@ -395,11 +393,11 @@ It's important to note that all of these approaches create shallow immutabilit
 
 67. ### What's object consonant? and what can or can't happen to obejct property?
 
-By combining writable:false and configurable:false, you can essentially create a constant (cannot be changed, redefined or deleted) as an object property
+By combining `writable:false` and `configurable:false`, you can essentially create a constant (cannot be changed, redefined or deleted) as an object property
 
 68. ### If you want to prevent an object from having new properties ?
 
-Object.preventExtensions
+`Object.preventExtensions`
 
 69. ### `Object.preventExtensions`?
 
@@ -409,7 +407,7 @@ If you want to prevent an object from having new properties added to it, but oth
 
 ```javascript
 var myObject = {
-    a: 2,
+  a: 2,
 };
 Object.preventExtentions(myObject);
 myObject.b = 3;
@@ -425,7 +423,7 @@ So, not only can you not add any more properties, but you also cannot reconfigur
 
 72. ### What's `Object.freeze()`?
 
-Object.freeze(..) creates a frozen object, which means it takes an existing object and essentially calls Object.seal(..) on it, but it also marks all "data accessor" properties as writable:false, so that their values cannot be changed.
+`Object.freeze(..)` creates a frozen object, which means it takes an existing object and essentially calls `Object.seal(..)` on it, but it also marks all "data accessor" properties as `writable:false`, so that their values cannot be changed.
 
 73. ### What is [[GET]]?
 
@@ -435,24 +433,24 @@ However, the `[[Get]]` algorithm defines other important behavior if it does 
 
 74. ### Property access actually perform what?
 
-Performs a [[Get]] operation (kinda like a function call: [[Get]]())
+Performs a `[[Get]]` operation (kinda like a function call: `[[Get]]())`
 
-75. ### If [[GET]] operation cannot come up with a value for the requested property what return?
+75. ### If `[[GET]]` operation cannot come up with a value for the requested property what return?
 
-If it cannot through any means come up with a value for the requested property, it instead returns the value undefined.
+If it cannot through any means come up with a value for the requested property, it instead returns the value `undefined`.
 
 76. ### Consider:
 
 ```javascript
 var myObject = {
-    a: undefined,
+  a: undefined,
 };
 myObject.a; // ?
 myObject.b; // ?
 ```
 
     - What's difference between two references form a value perspective?
-    - What's difference between two form [[GET]] operation?
+    - What's difference between two form `[[GET]]` operation?
     - Can you distinguish whether property exist and holds the explicit value of **undefined** or whether the property does not exist with inspecting only the result?
     - How can you distinguish these two scenario?
 
@@ -482,11 +480,11 @@ myObject.b; // ?
 
 79. ### What's getters and setters are in property level or object level?
 
-If the property is not yet present on the object in question, the [[Put]] operation is even more nuanced and complex. We will revisit this scenario in Chapter 5 when we discuss [[Prototype]] to give it more clarity.
+If the property is not yet present on the object in question, the `[[Put]]` operation is even more nuanced and complex. We will revisit this scenario in Chapter 5 when we discuss `[[Prototype]]` to give it more clarity.
 
 80. ### What's Getters and Setters?
 
-The default [[Put]] and [[Get]] operations for objects completely control how values are set to existing or new properties, or retrieved from existing properties, respectively.
+The default `[[Put]]` and `[[Get]]` operations for objects completely control how values are set to existing or new properties, or retrieved from existing properties, respectively.
 
 81. ### When you define a prperty to have either a getter or setter or both, it's definition becomes what?
 
@@ -496,19 +494,19 @@ When you define a property to have either a getter or a setter or both, its defi
 
 For accessor-descriptors, the value and writable characteristics of the descriptor are moot and ignored, and instead JS considers the set and get characteristics of the property (as well as configurable and enumerable).
 
-83. Consider:
+83. ### Consider:
 
 ```javascript
 var myObject = {
-    get a() {
-        return 2;
-    },
+  get a() {
+    return 2;
+  },
 };
 Object.defineProperty(myObject, "b", {
-    get: function () {
-        return this.a * 2;
-    },
-    enumerable: true,
+  get: function () {
+    return this.a * 2;
+  },
+  enumerable: true,
 });
 myObject.a; // ?
 myObject.b; // ?
@@ -518,24 +516,27 @@ Either through object-literal syntax with `get a() { .. }` or through explicit
 
 84. ### How to set getters and setters in literal syntax or with defineProperty?
 
-```
+```javascript
 var myObject = {
-	// define a getter for `a`
-	get a() {
-		return 2;
-	}
+  // define a getter for `a`
+  get a() {
+    return 2;
+  },
 };
 
 Object.defineProperty(
-	myObject,	// target
-	"b",		// property name
-	{			// descriptor
-		// define a getter for `b`
-		get: function(){ return this.a * 2 },
+  myObject, // target
+  "b", // property name
+  {
+    // descriptor
+    // define a getter for `b`
+    get: function () {
+      return this.a * 2;
+    },
 
-		// make sure `b` shows up as an object property
-		enumerable: true
-	}
+    // make sure `b` shows up as an object property
+    enumerable: true,
+  }
 );
 ```
 
@@ -543,9 +544,9 @@ Object.defineProperty(
 
 ```javascript
 myObject = {
-    get a() {
-        return 2;
-    },
+  get a() {
+    return 2;
+  },
 };
 myObject.a = 3;
 myObject.a; // ?
@@ -586,18 +587,18 @@ The `in` operator will
 ```javascript
 myObject = {};
 Object.defineProperty(myObject, "a", {
-    enummerable: true,
-    value: 2,
+  enummerable: true,
+  value: 2,
 });
 Object.defineProperty(myObject, "b", {
-    enummerable: false,
-    value: 3,
+  enummerable: false,
+  value: 3,
 });
 myObject.b; // ?
 "b" in myObject; // ?
 myObject.hasOwnProperty("b"); // ?
 for (let k in myObject) {
-    console.log(k, myObject[k]); // ?
+  console.log(k, myObject[k]); // ?
 }
 ```
 
@@ -641,7 +642,7 @@ The `for..of` loop asks for an iterator object (from a default internal functi
 ```javascript
 var myArray = [1, 2, 3];
 for (var v of myArray) {
-    console.log(v);
+  console.log(v);
 }
 ```
 
