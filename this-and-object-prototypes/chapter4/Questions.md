@@ -138,13 +138,130 @@ So then we define two specific kinds of vehicle: `Car` and `SpeedBoat`. They 
 22. ### Dimond problem with multiple inheritance?
     There's another variation, the so called "Diamond Problem", which refers to the scenario where a child class "D" inherits from two parent classes ("B" and "C"), and each of those in turn inherits from a common "A" parent. If "A" provides a method drive(), and both "B" and "C" override (polymorph) that method, when D references drive(), which version should it use (B:drive() or C:drive())?
 23. ### Does JS have multiple inheritance?
-24. JS object mechanism does perform copy behavior when you inherit? or instantiate?
-25. Is there class in JS?
-26. JS has object, and objects don't get copied, but they get what? how?
-27. How JS developers fake the missing copy behavior of classes in javascript?
-28. Type of mixins?
-29. Explicit mixin? example?
-30. In explicit mixin, how function and object will be copied?
-31. Polymorphism in explicit mixin?
-32. Parasitic inheritance?
-33. Implicit mixin?
+    These complications go even much deeper than this quick glance. We address them here only so we can contrast to how JavaScript's mechanisms work. JavaScript is simpler: it does not provide a native mechanism for "multiple inheritance". Many see this as a good thing, because the complexity savings more than make up for the "reduced" functionality. But this doesn't stop developers from trying to fake it in various ways, as we'll see next.
+24. ### JS object mechanism does perform copy behavior when you inherit? or instantiate?
+    JavaScript's object mechanism does not automatically perform copy behavior when you "inherit" or "instantiate". Plainly, there are no "classes" in JavaScript to instantiate, only objects. And objects don't get copied to other objects, they get linked together
+25. ### Is there class in JS?
+    No
+26. ### JS has object, and objects don't get copied, but they get what? how?
+    Objects don't get copied to other objects, they get linked together
+27. ### How JS developers fake the missing copy behavior of classes in javascript?
+    Since observed class behaviors in other languages imply copies, let's examine how JS developers fake the missing copy behavior of classes in JavaScript: mixins. We'll look at two types of "mixin": explicit and implicit.
+28. ### Type of mixins?
+    explicit and implicit
+29. ### Explicit mixin? example?
+
+    Let's again revisit our Vehicle and Car example from before. Since JavaScript will not automatically copy behavior from Vehicle to Car, we can instead create a utility that manually copies. Such a utility is often called extend(..) by many libraries/frameworks, but we will call it mixin(..) here for illustrative purposes.
+
+    ```javascript
+    // vastly simplified `mixin(..)` example:
+    function mixin(sourceObj, targetObj) {
+      for (var key in sourceObj) {
+        // only copy if not already present
+        if (!(key in targetObj)) {
+          targetObj[key] = sourceObj[key];
+        }
+      }
+
+      return targetObj;
+    }
+    var Vehicle = {
+      engines: 1,
+      ignition: function () {
+        console.log("Turning on my engine.");
+      },
+      drive: function () {
+        this.ignition();
+        console.log("Steering and moving forward!");
+      },
+    };
+
+    var Car = mixin(Vehicle, {
+      wheels: 4,
+
+      drive: function () {
+        Vehicle.drive.call(this);
+        console.log("Rolling on all " + this.wheels + " wheels!");
+      },
+    });
+    ```
+
+30. ### In explicit mixin, how function and object will be copied?
+    Technically, functions are not actually duplicated, but rather references to the functions are copied.
+31. ### Polymorphism in explicit mixin?
+    Because of JavaScript's peculiarities, explicit pseudo-polymorphism (because of shadowing!) creates brittle manual/explicit linkage **in every single function where you need such a (pseudo-)polymorphic reference**. This can significantly increase the maintenance cost. Moreover, while explicit pseudo-polymorphism can emulate the behavior of "multiple inheritance", it only increases the complexity and brittleness. The result of such approaches is usually more complex, harder-to-read, *and* harder-to-maintain code. **Explicit pseudo-polymorphism should be avoided wherever possible**, because the cost outweighs the benefit in most respects.
+32. ### Parasitic inheritance?
+
+    ```javascript
+    // "Traditional JS Class" `Vehicle`
+    function Vehicle() {
+      this.engines = 1;
+    }
+    Vehicle.prototype.ignition = function () {
+      console.log("Turning on my engine.");
+    };
+    Vehicle.prototype.drive = function () {
+      this.ignition();
+      console.log("Steering and moving forward!");
+    };
+    // "Parasitic Class" `Car`
+    function Car() {
+      // first, `car` is a `Vehicle`
+      var car = new Vehicle();
+
+      // now, let's modify our `car` to specialize it
+      car.wheels = 4;
+
+      // save a privileged reference to `Vehicle::drive()`
+      var vehDrive = car.drive;
+
+      // override `Vehicle::drive()`
+      car.drive = function () {
+        vehDrive.call(this);
+        console.log("Rolling on all " + this.wheels + " wheels!");
+      };
+
+      return car;
+    }
+
+    var myCar = new Car();
+
+    myCar.drive();
+    // Turning on my engine.
+    // Steering and moving forward!
+    // Rolling on all 4 wheels!
+    ```
+
+    As you can see, we initially make a copy of the definition from the `Vehicle` "parent class" (object), then mixin our "child class" (object) definition (preserving privileged parent-class references as needed), and pass off this composed object `car` as our child instance.
+
+    **Note:** when we call `new Car()`, a new object is created and referenced by `Car`s `this` reference (see Chapter 2). But since we don't use that object, and instead return our own `car` object, the initially created object is just discarded. So, `Car()` could be called without the `new` keyword, and the functionality above would be identical, but without the wasted object creation/garbage-collection.
+
+33. ### Implicit mixin?
+
+    Implicit mixins are closely related to explicit pseudo-polymorphism as explained previously. As such, they come with the same caveats and warnings.
+
+    ```javascript
+    var Something = {
+      cool: function () {
+        this.greeting = "Hello World";
+        this.count = this.count ? this.count + 1 : 1;
+      },
+    };
+
+    Something.cool();
+    Something.greeting; // "Hello World"
+    Something.count; // 1
+
+    var Another = {
+      cool: function () {
+        // implicit mixin of `Something` to `Another`
+        Something.cool.call(this);
+      },
+    };
+
+    Another.cool();
+    Another.greeting; // "Hello World"
+    Another.count; // 1 (not shared state with `Something`)
+    ```
+
+    With `Something.cool.call( this )`, which can happen either in a "constructor" call (most common) or in a method call (shown here), we essentially "borrow" the function `Something.cool()` and call it in the context of `Another` (via its `this` binding; see Chapter 2) instead of `Something`. The end result is that the assignments that `Something.cool()` makes are applied against the `Another` object rather than the `Something` object. So, it is said that we "mixed in" `Something`s behavior with (or into) `Another`. While this sort of technique seems to take useful advantage of `this` rebinding functionality, it is the brittle `Something.cool.call( this )` call, which cannot be made into a relative (and thus more flexible) reference, that you should **heed with caution**. Generally, **avoid such constructs where possible** to keep cleaner and more maintainable code.
