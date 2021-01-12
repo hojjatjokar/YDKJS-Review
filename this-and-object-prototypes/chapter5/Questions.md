@@ -1,29 +1,64 @@
-1. What's **[[prototype]]**?
-2. The default [[GET]] operatopn, if it cannot find the requested property on the object directly what happens?
-3. What will be output?
+1. ### What's **[[prototype]]**?
+
+Objects in JavaScript have an internal property, denoted in the specification as `[[Prototype]]`, which is simply a reference to another object. Almost all objects are given a non-null value for this property, at the time of their creation.
+
+2. ### The default [[GET]] operatopn, if it cannot find the requested property on the object directly what happens?
+
+The default [[Get]] operation proceeds to follow the [[Prototype]] link of the object if it cannot find the requested property on the object directly.
+
+3. ### What will be output?
 
 ```javascript
 var anotherObject = {
-    a: 2,
+  a: 2,
 };
 var myObject = Object.create(anotherObject);
 myObject.a; // ?
 ```
 
-4. What's return result from the [[GET]] operation if no matching property ever found by the end of the chain?
+The output will be 2
 
-5. Where exactly does the [[prototype]] chain ends?
-6. Object.prototype includes what?
-7. Setting properties on object if property doesn't exist on objects?
-8. What's shadowing?
-9. 3 scenarios for the **myObject.foo = "bar"** assignment when foo is not already on myObject directly, but is at a higher level of myObject's [[prototype]] chain?
-10. What's whole scenarios for setting property a value?
+4. ### What's return result from the [[GET]] operation if no matching property ever found by the end of the chain?
+
+If no matching property is ever found by the end of the chain, the return result from the [[Get]] operation is undefined.
+
+5. ### Where exactly does the [[prototype]] chain ends?
+
+The top-end of every normal [[Prototype]] chain is the built-in Object.prototype.
+
+6. ### `Object.prototype` includes what?
+
+This object includes a variety of common utilities used all over JS, because all normal (built-in, not host-specific extension) objects in JavaScript "descend from" (aka, have at the top of their [[Prototype]] chain) the Object.prototype object.
+
+7. ### Setting properties on object if property doesn't exist on objects?
+
+If `property` is not already present directly on `object`, the `[[Prototype]]` chain is traversed, just like for the `[[Get]]` operation. If `property` is not found anywhere in the chain, the property `property` is added directly to `myObject` with the specified value, as expected.
+
+However, if `property` is already present somewhere higher in the chain:
+
+a. If a normal data accessor property is found anywhere higher on the `[[Prototype]]` chain, **and it's not marked as read-only (`writable:false`)** then a new `property` is added directly to `object`, resulting in a **shadowed property**.
+b. If a `property` is found higher on the `[[Prototype]]` chain, but it's marked as **read-only (`writable: false`)**, then both the setting of that existing property as well as the creation of the shadowed property on `object` **are disallowed**. If the code is running in `strict mode`, an error will be thrown. Otherwise, the setting of the property value will silently be ignored. Either way, **no shadowing occurs**.
+c. If a `property` is found higher on the `[[Prototype]]` chain and it's a setter, then the setter will always be called. No `property` will be added to (aka, shadowed on) `object`, nor will the `property` setter be redefined.
+
+8. ### What's shadowing?
+
+If the property name foo ends up both on myObject itself and at a higher level of the [[Prototype]] chain that starts at myObject, this is called shadowing. The foo property directly on myObject shadows any foo property which appears higher in the chain, because the myObject.foo look-up would always find the foo property that's lowest in the chain.
+
+9. ### 3 scenarios for the **myObject.foo = "bar"** assignment when foo is not already on myObject directly, but is at a higher level of myObject's [[prototype]] chain?
+
+a. If a normal data accessor property named `foo` is found anywhere higher on the `[[Prototype]]` chain, **and it's not marked as read-only (`writable:false`)** then a new property called `foo` is added directly to `myObject`, resulting in a **shadowed property**.
+
+b. If a `foo` is found higher on the `[[Prototype]]` chain, but it's marked as **read-only (`writable:false`)**, then both the setting of that existing property as well as the creation of the shadowed property on `myObject` **are disallowed**. If the code is running in `strict mode`, an error will be thrown. Otherwise, the setting of the property value will silently be ignored. Either way, **no shadowing occurs**.
+
+c. If a `foo` is found higher on the `[[Prototype]]` chain and it's a setter, then the setter will always be called. No `foo` will be added to (aka, shadowed on) `myObject`, nor will the `foo` setter be redefined.
+
+10. ### What's whole scenarios for setting property a value?
 11. If a property on Object is **writable: false** higher in [[prototype]] chain how can it be shadowed?
 12. What's result? why? explain
 
 ```javascript
 var anotherObject = {
-    a: 2,
+  a: 2,
 };
 var myObject = Object.create(anotherObject);
 anotherObject.a;
@@ -76,10 +111,10 @@ a.__proto__.constructor === Foo.__proto__.constructor; // ?
 
 ```javascript
 function Foo(name) {
-    this.name = name;
+  this.name = name;
 }
 Foo.prototype.myName = function () {
-    return this.name;
+  return this.name;
 };
 var a = new Foo("a");
 var b = new Foo("b");
@@ -105,18 +140,18 @@ a1.constructor === Object; // ?
 
 ```javascript
 function Foo(name) {
-    this.name = name;
+  this.name = name;
 }
 Foo.prototype.myName = function () {
-    return this.name;
+  return this.name;
 };
 function Bar(name, lable) {
-    Foo.call(this, name);
-    this.label = lable;
+  Foo.call(this, name);
+  this.label = lable;
 }
 Bar.prototype = Object.create(Foo.prototype);
 Bar.prototype.myLabel = function () {
-    return this.lable;
+  return this.lable;
 };
 var a = new Bar("a", "obj a");
 a.myName();
@@ -126,18 +161,18 @@ a.myLabel();
 29. How to find out an object delegates to what object?
 30. Prototypal inheritance soloutions? pros and cons?
 
-    -   Bar.prototype = Foo.prototype;
-    -   Bar.prototype = new Foo();
-    -   Object.create()
-    -   Object.setPrototypeOf()
+    - Bar.prototype = Foo.prototype;
+    - Bar.prototype = new Foo();
+    - Object.create()
+    - Object.setPrototypeOf()
 
 31. Introspection (or reflection)?
 32. instanceof ?
 33. isPrototypeOf()
 34. getPrototypeOf()
 35. **proto**?
-    -   What is it?
-    -   It exists where?
-    -   It's property or getter/setter?
+    - What is it?
+    - It exists where?
+    - It's property or getter/setter?
 36. What's [[prototype]] mechanism?
 37. When [[prototype]] linkage exercise?
