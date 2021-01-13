@@ -53,8 +53,22 @@ b. If a `foo` is found higher on the `[[Prototype]]` chain, but it's marked 
 c. If a `foo` is found higher on the `[[Prototype]]` chain and it's a setter, then the setter will always be called. No `foo` will be added to (aka, shadowed on) `myObject`, nor will the `foo` setter be redefined.
 
 10. ### What's whole scenarios for setting property a value?
-11. If a property on Object is **writable: false** higher in [[prototype]] chain how can it be shadowed?
-12. What's result? why? explain
+    If property is present in object:
+
+- If has setter, the setter will be called
+- Else if `writable: false`, assignment will be ignored
+- Else assignment be done as normal
+
+If property is not present in object:
+
+- If not present in its prototype, assignment take affect as normal
+- If it's present in its prototype chain and is `writable: false`, the assignment will not take effect
+- If it's present in its prototype chain, and has setter , setter will be called
+- If it's present in its prototype chain, and does not have setter and doesn't have `writable: false` it will be shadowed
+
+11. ### If a property on Object is **writable: false** higher in [[prototype]] chain how can it be shadowed?
+    If you want to shadow foo in cases #2 and #3, you cannot use = assignment, but must instead use Object.defineProperty(..)  to add foo to myObject.
+12. ### What's result? why? explain
 
 ```javascript
 var anotherObject = {
@@ -72,8 +86,17 @@ anotherObject.hasOwnProperty("a"); // ?
 myObject.hasOwnProperty("a"); // ?
 ```
 
-13. Class function?
-14.
+Though it may appear that `myObject.a++` should (via delegation) look-up and just increment the `anotherObject.a` property itself *in place*, instead the `++` operation corresponds to `myObject.a = myObject.a + 1`. The result is `[[Get]]` looking up `a` property via `[[Prototype]]` to get the current value `2` from `anotherObject.a`, incrementing the value by one, then `[[Put]]` assigning the `3` value to a new shadowed property `a` on `myObject`. Oops!
+
+Be very careful when dealing with delegated properties that you modify. If you wanted to increment `anotherObject.a`, the only proper way is `anotherObject.a++`.
+
+13. ### Class function?
+
+All functions by default get a public, non-enumerable property on them called `prototype`, which points at an otherwise arbitrary object. This object is often called "Foo's prototype".
+
+Each object created from calling `new Foo()` will end up `[[Prototype]]`-linked to this "Foo dot prototype" object.
+
+14. ### Explain
 
 ```javascript
 function Foo() {}
@@ -81,17 +104,26 @@ var a = new Foo();
 Object.getPrototypeOf(a) === Foo.prototype; // ?
 ```
 
-15. When an object created by calling **new Foo()** one of things that happen is what?
-16. In JS you create multiple instances of a class? or you create multiple objects that are [[prototype]]-linked to a common object?
+When a is created by calling new Foo(), one of the things (see Chapter 2 for all four steps) that happens is that a gets an internal [[Prototype]] link to the object that Foo.prototype is pointing at.
 
-17. By default, no copying occurs, and thus these objects don't end up totally separate and disconnected from each other, but?
+15. ### When an object created by calling **new Foo()** one of things that happen is what?
 
-18. **new Foo()** is direct or indirect way to (a new object linked) to another object? what's direct way?
-19. In JS we don't make copy from one object (class) to another (instance), what we make?
-20. prototypal inheritance? is this term ok? why?
-21. Differential inheritance?
-22. What exactly leads us to think Foo is a "class"?
-23. What will be the rusult?
+Each object created from calling new Foo() will end up [[Prototype]]-linked to this "Foo dot prototype" object.
+
+16. ### What's the difference between constructing objects in class-oriented languages and Javascript?
+    **In class-oriented languages**, multiple **copies** (aka, "instances") of a class can be made, like stamping something out from a mold. As we saw in Chapter 4, this happens because the process of instantiating (or inheriting from) a class means, "copy the behavior plan from that class into a physical object", and this is done again for each new instance.
+    **But in JavaScript,** there are no such copy-actions performed. You don't create multiple instances of a class. You can create multiple objects that `[[Prototype]]` *link* to a common object. But by default, no copying occurs, and thus these objects don't end up totally separate and disconnected from each other, but rather, quite **_linked_**.
+17. ### When constructing an object in Javascript, what's the relation between constructor function and created objected?
+    But in JavaScript, there are no such copy-actions performed. You don't create multiple instances of a class. You can create multiple objects that [[Prototype]] link to a common object. But by default, no copying occurs, and thus these objects don't end up totally separate and disconnected from each other, but rather, quite linked.
+18. ### **new Foo()** is direct or indirect way to (a new object linked) to another object? what's direct way?
+    In fact, the secret, which eludes most JS developers, is that the `new Foo()` function calling had really almost nothing *direct* to do with the process of creating the link. **It was sort of an accidental side-effect.** `new Foo()` is an indirect, round-about way to end up with what we want: **a new object linked to another object**.
+    Can we get what we want in a more *direct* way? **Yes!** The hero is `Object.create(..)`. But we'll get to that in a little bit.
+19. ### In JS we don't make copy from one object (class) to another (instance), what we make?
+    a new object linked to another object.
+20. ### prototypal inheritance? is this term ok? why?
+21. ### Differential inheritance?
+22. ### What exactly leads us to think Foo is a "class"?
+23. ### What will be the rusult?
 
 ```javascript
 fucntion Foo() {}
