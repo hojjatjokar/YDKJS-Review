@@ -123,6 +123,7 @@ Each object created from calling new Foo() will end up [[Prototype]]-linked to
 20. ### prototypal inheritance? is this term ok? why?
 21. ### Differential inheritance?
 22. ### What exactly leads us to think Foo is a "class"?
+    For one, we see the use of the new keyword, just like class-oriented languages do when they construct class instances. For another, it appears that we are in fact executing a constructor method of a class, because Foo() is actually a method that gets called, just like how a real class's constructor gets called when you instantiate that class.
 23. ### What will be the rusult?
 
 ```javascript
@@ -138,8 +139,11 @@ a.__proto__.constructor === Foo.prototype.constructor; // ?
 a.__proto__.constructor === Foo.__proto__.constructor; // ?
 ```
 
-24. Constructor function or constructor call?
-25. This snippet shows two additional **"class orientation"** tricks in play:
+Answer: `false`
+
+24. ### Constructor function or constructor call?
+    In reality, `Foo` is no more a "constructor" than any other `function` in your program. Functions themselves are not constructors. However, when you put the new keyword in front of a normal function call, that makes that function call a "constructor call". In fact, new sort of hijacks any normal function and calls it in a fashion that constructs an object, in addition to whatever else it was going to do.
+25. ### This snippet shows two additional **"class orientation"** tricks in play:
 
 ```javascript
 function Foo(name) {
@@ -154,7 +158,12 @@ a.myName();
 b.myName();
 ```
 
-26.
+This snippet shows two additional "class-orientation" tricks in play:
+
+a. `this.name = name`: adds the `.name` property onto each object (`a` and `b`, respectively; see Chapter 2 about `this` binding), similar to how class instances encapsulate data values.
+b. `Foo.prototype.myName = ...`: perhaps the more interesting technique, this adds a property (function) to the `Foo.prototype` object. Now, `a.myName()` works, but perhaps surprisingly. How?
+
+26. ### Explain code? How it end up to delegate to object constructor?
 
 ```javascript
 function foo() {}
@@ -164,11 +173,21 @@ a1.constructor === Foo; // ?
 a1.constructor === Object; // ?
 ```
 
-    - Explain code?
-    - How it end up to delegate to object constructor?
+Answer:
 
-27. The words "constructor" and "prototype" only have a what meaning? loose default meaning? why?
-28. Explain
+```javascript
+a1.constructor === Foo; // false
+
+a1.constructor === Object; // true
+```
+
+27. ### The words "constructor" and "prototype" only have a what meaning? loose default meaning? why?
+
+The fact is, `.constructor` on an object arbitrarily points, by default, at a function who, reciprocally, has a reference back to the object -- a reference which it calls `.prototype`. The words "constructor" and "prototype" only have a loose default meaning that might or might not hold true later. The best thing to do is remind yourself, "constructor does not mean constructed by".
+
+`.constructor` is not a magic immutable property. It *is* non-enumerable, but its value is writable (can be changed), and moreover, you can add or overwrite (intentionally or accidentally) a property of the name `constructor` on any object in any `[[Prototype]]` chain, with any value you see fit.
+
+28. ### Explain
 
 ```javascript
 function Foo(name) {
