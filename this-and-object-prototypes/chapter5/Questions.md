@@ -209,21 +209,54 @@ a.myName();
 a.myLabel();
 ```
 
-29. How to find out an object delegates to what object?
-30. Prototypal inheritance soloutions? pros and cons?
+**Note:** To understand why `this` points to `a` in the above code snippet, see Chapter 2.The important part is `Bar.prototype = Object.create( Foo.prototype )`. `Object.create(..)` *creates* a "new" object out of thin air, and links that new object's internal `[[Prototype]]` to the object you specify (`Foo.prototype` in this case). In other words, that line says: "make a *new* 'Bar dot prototype' object that's linked to 'Foo dot prototype'." When `function Bar() { .. }` is declared, `Bar`, like any other function, has a `.prototype` link to its default object. But *that* object is not linked to `Foo.prototype` like we want. So, we create a *new* object that *is* linked as we want, effectively throwing away the original incorrectly-linked object.
 
-    - Bar.prototype = Foo.prototype;
-    - Bar.prototype = new Foo();
-    - Object.create()
-    - Object.setPrototypeOf()
+29. ### How to find out an object delegates to what object?
+    `Object.getPrototypeOf( a );`
+30. ### Prototypal inheritance soloutions? pros and cons?
 
-31. Introspection (or reflection)?
-32. instanceof ?
-33. isPrototypeOf()
-34. getPrototypeOf()
-35. **proto**?
-    - What is it?
-    - It exists where?
-    - It's property or getter/setter?
-36. What's [[prototype]] mechanism?
-37. When [[prototype]] linkage exercise?
+- Bar.prototype = Foo.prototype;
+  `Bar.prototype = Foo.prototype` doesn't create a new object for `Bar.prototype` to be linked to. It just makes `Bar.prototype` be another reference to `Foo.prototype`, which effectively links `Bar` directly to **the same object as** `Foo` links to: `Foo.prototype`. This means when you start assigning, like `Bar.prototype.myLabel = ...`, you're modifying **not a separate object** but *the* shared `Foo.prototype` object itself, which would affect any objects linked to `Foo.prototype`. This is almost certainly not what you want. If it *is* what you want, then you likely don't need `Bar` at all, and should just use only `Foo` and make your code simpler.
+- Bar.prototype = new Foo();
+  Bar.prototype = new Foo() does in fact create a new object which is duly linked to Foo.prototype as we'd want. But, it uses the Foo(..) "constructor call" to do it. If that function has any side-effects (such as logging, changing state, registering against other objects, adding data properties to this, etc.), those side-effects happen at the time of this linking (and likely against the wrong object!), rather than only when the eventual Bar() "descendants" are created, as would likely be expected.
+- Object.create()
+  So, we're left with using Object.create(..) to make a new object that's properly linked, but without having the side-effects of calling Foo(..). The slight downside is that we have to create a new object, throwing the old one away, instead of modifying the existing default object we're provided.
+- Object.setPrototypeOf()
+  It would be nice if there was a standard and reliable way to modify the linkage of an existing object. Prior to ES6, there's a non-standard and not fully-cross-browser way, via the .**proto** property, which is settable. ES6 adds a Object.setPrototypeOf(..) helper utility, which does the trick in a standard and predictable way.
+
+31. ### Introspection (or reflection)?
+    Inspecting an instance (just an object in JS) for its inheritance ancestry (delegation linkage in JS) is often called introspection (or reflection) in traditional class-oriented environments.
+32. ### `instanceof` ?
+
+    How do we then introspect `a` to find out its "ancestry" (delegation linkage)? The first approach embraces the "class" confusion:
+
+    ```jsx
+    a instanceof Foo; // true
+    ```
+
+    The `instanceof` operator takes a plain object as its left-hand operand and a **function** as its right-hand operand. The question `instanceof` answers is: **in the entire `[[Prototype]]` chain of `a`, does the object arbitrarily pointed to by `Foo.prototype` ever appear?**
+
+33. ### isPrototypeOf()?
+
+    The second, and much cleaner, approach to `[[Prototype]]` reflection is:
+    `Foo.prototype.isPrototypeOf( a ); // true`
+    Notice that in this case, we don't really care about (or even *need*) `Foo`, we just need an **object** (in our case, arbitrarily labeled `Foo.prototype`) to test against another **object**. The question `isPrototypeOf(..)` answers is: **in the entire `[[Prototype]]` chain of `a`, does `Foo.prototype` ever appear?**
+
+34. ### getPrototypeOf()
+
+    We can also directly retrieve the `[[Prototype]]` of an object. As of ES5, the standard way to do this is:
+    `Object.getPrototypeOf( a );`
+    And you'll notice that object reference is what we'd expect:
+    `Object.getPrototypeOf( a ) === Foo.prototype; // true`
+
+35. ### **proto**?
+
+- What is it?
+- It exists where?
+- It's property or getter/setter?
+  The strange `.__proto__`  property "magically" retrieves the internal `[[Prototype]]` of an object as a reference, which is quite helpful if you want to directly inspect (or even traverse: `.__proto__.__proto__...`) the chain. Just as we saw earlier with `.constructor`, `.__proto__` doesn't actually exist on the object you're inspecting. In fact, it exists on the built-in `Object.prototype`, along with the other common utilities (`.toString()`, `.isPrototypeOf(..)`, etc). Moreover, `.__proto__` looks like a property, but it's actually more appropriate to think of it as a getter/setter.
+
+36. ### What's [[prototype]] mechanism?
+    The [[Prototype]] mechanism is an internal link that exists on one object which references some other object.
+37. ### When [[prototype]] linkage exercise?
+    This linkage is (primarily) exercised when a property/method reference is made against the first object, and no such property/method exists. In that case, the [[Prototype]] linkage tells the engine to look for the property/method on the linked-to object. In turn, if that object cannot fulfill the look-up, its [[Prototype]] is followed, and so on. This series of links between objects forms what is called the "prototype chain".
