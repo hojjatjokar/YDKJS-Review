@@ -1,4 +1,4 @@
-1. ### Objects comes in what forms?
+1. ### What forms objects come in ?
    Objects come in two forms: the declarative (literal) form, and the constructed form.
 2. ### Example of literal syntax for object?
 
@@ -20,7 +20,7 @@ myObj.key = value;
 
 The constructed form and the literal form result in exactly the same sort of object. The only difference really is that you can add one or more key/value pairs to the literal declaration, whereas with constructed-form objects, you must add the properties one-by-one.
 
-5. ### Which form is more common? literal or constructed?
+5. ### Which form of obejects is more common? literal or constructed?
 
 It's extremely uncommon to use the "constructed form" for creating objects as just shown. You would pretty much always want to use the literal syntax form. The same will be true of most of the built-in objects.
 
@@ -59,17 +59,15 @@ Functions in JS are said to be "first class" in that they are basically just nor
 
 Arrays are also a form of objects, with extra behavior. The organization of contents in arrays is slightly more structured than for general objects.
 
-12. ### Object sub-types are just what?
+12. ### What are Object sub-types?
 
 There are a few special object sub-types, which we can refer to as complex primitives.
 
 13. ### What's relationship between these built-in functions and simple primitives?
 
-    For some of them, their names seem to imply they are directly related to their simple primitives counter-parts, but in fact, their relationship is more complicated.
+For some of them, their names seem to imply they are directly related to their simple primitives counter-parts, but in fact, their relationship is more complicated. Luckily, the language automatically coerces a `"string"` primitive to a `String` object when necessary, which means you almost never need to explicitly create the Object form. It is **strongly preferred** by the majority of the JS community to use the literal form for a value, where possible, rather than the constructed object form.
 
-    Luckily, the language automatically coerces a `"string"` primitive to a `String` object when necessary, which means you almost never need to explicitly create the Object form. It is **strongly preferred** by the majority of the JS community to use the literal form for a value, where possible, rather than the constructed object form.
-
-14. ### Have **null**, **undefined**, object wrapper?
+14. ### Have `null`, `undefined`, object wrapper?
 
 `null` and `undefined` have no object wrapper form, only their primitive values.
 
@@ -83,7 +81,7 @@ There are a few special object sub-types, which we can refer to as complex pr
 
 17. ### which way Error objects created in most? How can we create?
 
-Error objects are rarely created explicitly in code, but usually created automatically when exceptions are thrown. They can be created with the constructed form new Error(..), but it's often unnecessary.
+Error objects are rarely created explicitly in code, but usually created automatically when exceptions are thrown. They can be created with the constructed form `new Error(..)`, but it's often unnecessary.
 
 18. ### Content of an object consist of what?
 
@@ -95,13 +93,13 @@ It's important to note that while we say "contents" which implies that these val
 
 20. ### How to access value in object?
 
-To access the value at the location a in myObject, we need to use either the . operator or the [ ] operator. The .a syntax is usually referred to as "property" access, whereas the ["a"] syntax is usually referred to as "key" access. In reality, they both access the same location, and will pull out the same value, 2, so the terms can be used interchangeably. We will use the most common term, "property access" from here on.
+To access the value at the location a in `myObject`, we need to use either the `.` operator or the `[ ]` operator. The `.a` syntax is usually referred to as "property" access, whereas the `["a"]` syntax is usually referred to as "key" access. In reality, they both access the same location, so the terms can be used interchangeably.
 
 21. ### Which access method to value in object preferred?
 
 the `.` operator
 
-22. ### What's difference between two method of acessing?
+22. ### What's difference between two method of accessing?
 
 The main difference between the two syntaxes is that the `.` operator requires an Identifier compatible property name after it, whereas the `[".."]` syntax can take basically any `UTF-8/unicode` compatible string as the name for the property. To reference a property of the name "Super-Fun!", for instance, you would have to use the `["Super-Fun!"]` access syntax, as Super-Fun! is not a valid Identifier property name.
 
@@ -125,7 +123,7 @@ myObject["[object object]"]; // ?
 
 ES6 adds *computed property names*, where you can specify an expression, surrounded by a `[ ]` pair, in the key-name position of an object-literal declaration:
 
-```jsx
+```javascript
 var prefix = "foo";
 
 var myObject = {
@@ -155,15 +153,13 @@ myObject["foobaz"]; // ?
 
 28. ### What is array?
 
-Arrays also use the `[ ]` access form, but as mentioned above, they have slightly more structured organization for how and where values are stored.
-
-Arrays assume *numeric indexing*, which means that values are stored in locations, usually called *indices*, at non-negative integers, such as `0` and `42`.
+Arrays also use the `[ ]` access form, but as mentioned above, they have slightly more structured organization for how and where values are stored. Arrays assume *numeric indexing*, which means that values are stored in locations, usually called *indices*, at non-negative integers, such as `0` and `42`.
 
 29. ### Which access form arrays use?
 
 Arrays also use the `[ ]` access form
 
-30. ### In Array, values strored in which location?
+30. ### Which location values stored in array?
     Arrays assume numeric indexing, which means that values are stored in locations, usually called indices, at non-negative integers, such as 0 and 42.
 31. ### What is array indexing ?
 
@@ -182,7 +178,7 @@ myArray[2]; // ?
     Arrays are objects, so even though each index is a positive integer, you can also add properties onto the array
 34. ### Adding named properties does change reported length of array?
 
-Notice that adding named properties (regardless of . or [ ] operator syntax) does not change the reported length of the array.
+Notice that adding named properties (regardless of `.` or `[ ]` operator syntax) does not change the reported length of the array.
 
 35. ### Could you use an array as a plain key/value object? is it good idea? why?
 
@@ -238,7 +234,7 @@ myArray[3]; // "baz"
 
 Using `Object.assign`
 
-40. ### How **Object.assign** works?
+40. ### How `Object.assign` works?
 
 `Object.assign(..)` takes a target object as its first parameter, and one or more source objects as its subsequent parameters. It iterates over all the enumerable, owned keys (immediately present) on the source object(s) and copies them (via = assignment only) to target.
 
@@ -264,7 +260,7 @@ Should we detect a circular reference and just break the circular traversal (lea
 
 45. ### Is There a way for copy a function?
 
-Moreover, it's not really clear what "duplicating" a function would mean? There are some hacks like pulling out the toString() serialization of a function's source code (which varies across implementations and is not even reliable in all engines depending on the type of function being inspected).
+Moreover, it's not really clear what "duplicating" a function would mean? There are some hacks like pulling out the `toString()` serialization of a function's source code (which varies across implementations and is not even reliable in all engines depending on the type of function being inspected).
 
 46. ### Explain JSON safe object copy?
 
@@ -274,7 +270,7 @@ One subset solution is that objects which are JSON-safe (that is, can be seriali
 
 Of course, that requires you to ensure your object is JSON safe. For some situations, that's trivial. For others, it's insufficient.
 
-47. ### In Object.assign what will happen to property descriptor?
+47. ### In `Object.assign` what will happen to property descriptor?
 
 The duplication that occurs for `Object.assign(..)` however is purely = style assignment, so any special characteristics of a property (like writable) on a source object are not preserved on the target object.
 
