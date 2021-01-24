@@ -290,11 +290,11 @@ property characteristics
     // }
     ```
 
-50. ### What property descriptor includes?
+50. ### What does property descriptor include?
 
     It includes 3 other characteristics: writable, enumerable, and configurable.
 
-51. ### What is property descriptor characteristics default values ?
+51. ### What are property descriptor characteristics default values ?
 
 ```javascript
 {
@@ -379,7 +379,7 @@ It is sometimes desired to make properties or objects that cannot be changed (ei
 - `Object.seal`
 - `Object.freeze`
 
-65. ### All this approaches are shallow or deep immutability?
+65. ### Immutability approaches available in JS are shallow or deep immutability?
 
 It's important to note that all of these approaches create shallow immutability.
 
@@ -395,7 +395,7 @@ By combining `writable:false` and `configurable:false`, you can essentially c
 
 `Object.preventExtensions`
 
-69. ### `Object.preventExtensions`?
+69. ### What does `Object.preventExtensions` do?
 
 If you want to prevent an object from having new properties added to it, but otherwise leave the rest of the object's properties alone, call `Object.preventExtensions(..)`
 
@@ -411,7 +411,7 @@ myObject.b; // normal mode ?
 // use strict ?
 ```
 
-71. ### Whats `Object.seal()`?
+71. ### What does `Object.seal()` do?
 
 `Object.seal(..)` creates a "sealed" object, which means it takes an existing object and essentially calls `Object.preventExtensions(..)` on it, but also marks all its existing properties as `configurable:false`.
 
@@ -427,7 +427,7 @@ According to the spec, `myObject.a` actually performs a `[[Get]]` operation (k
 
 However, the `[[Get]]` algorithm defines other important behavior if it does *not* find a property of the requested name. Traversal of the `[[Prototype]]` chain, if any.
 
-74. ### Property access actually perform what?
+74. ### Property access actually performs what?
 
 Performs a `[[Get]]` operation (kinda like a function call: `[[Get]]())`
 
@@ -445,26 +445,25 @@ myObject.a; // ?
 myObject.b; // ?
 ```
 
-    - What's difference between two references form a value perspective?
-    - What's difference between two form `[[GET]]` operation?
-    - Can you distinguish whether property exist and holds the explicit value of **undefined** or whether the property does not exist with inspecting only the result?
-    - How can you distinguish these two scenario?
+a. What's difference between two references form a value perspective?
+b. What's difference between two form `[[GET]]` operation?
+c. Can you distinguish whether property exist and holds the explicit value of `undefined` or whether the property does not exist with inspecting only the result?
+d. How can you distinguish these two scenario?
 
-    a. None
-    b.  The `[[Get]]` operation underneath, though subtle at a glance, potentially performed a bit more "work" for the reference `myObject.b` than for the reference `myObject.a`.
-    c. Inspecting only the value results, you cannot distinguish whether a property exists and holds the explicit value `undefined`, or whether the property does *not* exist and `undefined` was the default return value after `[[Get]]` failed to return something explicitly.
+a. None
+b. The `[[Get]]` operation underneath, though subtle at a glance, potentially performed a bit more "work" for the reference `myObject.b` than for the reference `myObject.a`.
+c. Inspecting only the value results, you cannot distinguish whether a property exists and holds the explicit value `undefined`, or whether the property does *not* exist and `undefined` was the default return value after `[[Get]]` failed to return something explicitly.
 
 77. ### When invoking [[Put]], how it behaves?
 
     When invoking `[[Put]]`, how it behaves differs based on a number of factors, including whether the property is already present on the object or not.
-
     If the property is present, the `[[Put]]` algorithm will roughly check:
 
     a. Is the property an accessor descriptor? **If so, call the setter, if any.**
     b. Is the property a data descriptor with `writable` of `false`? **If so, silently fail in `non-strict mode`, or throw `TypeError` in `strict mode`.**
     c. Otherwise, set the value to the existing property as normal.
 
-    If the property is not yet present on the object in question, the `[[Put]]` operation is even more nuanced and complex. We will revisit this scenario in Chapter 5 when we discuss `[[Prototype]]` to give it more clarity.
+    If the property is not yet present on the object in question, the `[[Put]]` operation is even more nuanced and complex.
 
 78. ### If the property is present on the object, the [[put]] what will do?
 
@@ -476,7 +475,7 @@ myObject.b; // ?
 
 79. ### What's getters and setters are in property level or object level?
 
-If the property is not yet present on the object in question, the `[[Put]]` operation is even more nuanced and complex. We will revisit this scenario in Chapter 5 when we discuss `[[Prototype]]` to give it more clarity.
+If the property is not yet present on the object in question, the `[[Put]]` operation is even more nuanced and complex.
 
 80. ### What's Getters and Setters?
 
@@ -486,7 +485,7 @@ The default `[[Put]]` and `[[Get]]` operations for objects completely contro
 
 When you define a property to have either a getter or a setter or both, its definition becomes an "accessor descriptor" (as opposed to a "data descriptor"). For accessor-descriptors, the value and writable characteristics of the descriptor are moot and ignored, and instead JS considers the set and get characteristics of the property (as well as configurable and enumerable).
 
-82. ### For accessor-descriptor, the value and writable characteristics will be what?
+82. ### What will be happen to the value and writable characteristics for accessor-descriptor?
 
 For accessor-descriptors, the value and writable characteristics of the descriptor are moot and ignored, and instead JS considers the set and get characteristics of the property (as well as configurable and enumerable).
 
@@ -553,31 +552,32 @@ myObject.a; // ?
 87. ### Explain
 
 ```javascript
-    var myObject = {
-        get a() {
-            return this._a;
-        }
-        set a(val){
-            this._a = val * 2;
-        }
-    };
-    myObject.a = 2;
-    myObject.a; // ?
+var myObject = {
+  get a() {
+    return this._a;
+  },
+  set a(val) {
+    this._a = val * 2;
+  },
+};
+myObject.a = 2;
+myObject.a; // ?
 ```
 
-Note: In this example, we actually store the specified value 2 of the assignment ([[Put]] operation) into another variable *a*. The *a* name is purely by convention for this example and implies nothing special about its behavior -- it's a normal property like any other.
+We store the specified value 2 of the assignment ([[Put]] operation) into another variable `a`. The `a` name is purely by convention for this example and implies nothing special about its behavior -- it's a normal property like any other.
 
-88. ### How to check property existance?
+88. ### How to check for property existance?
 
-The `in` operator will
+The `in` operator and `hasOwnProperty(..)`
 
-`hasOwnProperty(..)`
+89. ### What's difference between `in` operator and `hasOwnProperty`?
 
-89. ### What's difference between **in** operator and **hasOwnProperty**?
-
-    The in operator will check to see if the property is in the object, or if it exists at any higher level of the [[Prototype]] chain object traversal. By contrast, hasOwnProperty(..) checks to see if only myObject has the property or not, and will not consult the [[Prototype]] chain.
+    The in operator will check to see if the property is in the object, or if it exists at any higher level of the `[[Prototype]]` chain object traversal. By contrast,`hasOwnProperty(..)` checks to see if only myObject has the property or not, and will not consult the `[[Prototype]]` chain.
 
 90. ### What's enumerable means?
+
+An enumerable property in JavaScript means that a property can be viewed if it is iterated using the `for…in` loop or `Object.keys()` method. All the properties which are created by simple assignment or property initializer are enumerable by default.
+
 91. ### Explain:
 
 ```javascript
@@ -607,19 +607,25 @@ Whereas `in` vs. `hasOwnProperty(..)` differ in whether they consult the `[
 There's (currently) no built-in way to get a list of **all properties** which is equivalent to what the `in` operator test would consult (traversing all properties on the entire `[[Prototype]]` chain, as explained in Chapter 5). You could approximate such a utility by recursively traversing the `[[Prototype]]` chain of an object, and for each level, capturing the list from `Object.keys(..)` -- only enumerable properties.
 
 92. ### What does `propertyIsEnumerable` do?
+
     `propertyIsEnumerable(..)` tests whether the given property name exists directly on the object and is also enumerable:true.
+
 93. ### What does `keys()` do?
+
     `Object.keys(..)` returns an array of all enumerable properties, whereas Object.getOwnPropertyNames(..) returns an array of all properties, enumerable or not.
-94. ### What does getOwnPropertyNames do?
+
+94. ### What does `getOwnPropertyNames` do?
+
     `Object.getOwnPropertyNames(..)` returns an array of all properties, enumerable or not.
-95. ### What's difference between **keys()** and getOwnPropertyNames?
+
+95. ### What's difference between `keys()` and `getOwnPropertyNames`?
 
     Whereas `in` vs. `hasOwnProperty(..)` differ in whether they consult the `[[Prototype]]` chain or not, `Object.keys(..)` and `Object.getOwnPropertyNames(..)` both inspect only the direct object specified.
 
-96. ### Is there built-in way to get a list of all properties which equivalent to what the **in** operator test would consult? how you can get manually?
-    There's (currently) no built-in way to get a list of all properties which is equivalent to what the in operator test would consult. You could approximate such a utility by recursively traversing the [[Prototype]] chain of an object, and for each level, capturing the list from Object.keys(..) -- only enumerable properties.
+96. ### Is there built-in way to get a list of all properties which equivalent to what the `in` operator test would consult? how you can get manually?
+    There's (currently) no built-in way to get a list of all properties which is equivalent to what the in operator test would consult. You could approximate such a utility by recursively traversing the `[[Prototype]]` chain of an object, and for each level, capturing the list from `Object.keys(..)` -- only enumerable properties.
 97. ### What is `for..in` ?
-    The `for..in` loop iterates over the list of enumerable properties on an object (including its [[Prototype]] chain). But what if you instead want to iterate over the values?
+    The `for..in` loop iterates over the list of enumerable properties on an object (including its `[[Prototype]]` chain). But what if you instead want to iterate over the values?
 98. ### Iterating over the values typically done with a standard for loop in arrays?
     With numerically-indexed arrays, iterating over the values is typically done with a standard for loop
 99. ### Difference between `forEach`, `every(...)`, `some()`?
@@ -629,8 +635,8 @@ There's (currently) no built-in way to get a list of **all properties** which 
 These special return values inside `every(..)` and `some(..)` act somewhat like a `break` statement inside a normal `for` loop, in that they stop the iteration early before it reaches the end.
 
 100. ### `for...of`? How it works?
-     Iterate over the values directly instead of the array indices (or object properties).
 
+Iterate over the values directly instead of the array indices (or object properties).
 The `for..of` loop asks for an iterator object (from a default internal function known as `@@iterator` in spec-speak) of the *thing* to be iterated, and the loop then iterates over the successive return values from calling that iterator object's `next()` method, once for each loop iteration.
 
 101. ### Explain?
@@ -642,7 +648,7 @@ for (var v of myArray) {
 }
 ```
 
-The for..of loop asks for an iterator object (from a default internal function known as @@iterator in spec-speak) of the thing to be iterated, and the loop then iterates over the successive return values from calling that iterator object's next() method, once for each loop iteration.
+The `for..of` loop asks for an iterator object (from a default internal function known as `@@iterator` in spec-speak) of the thing to be iterated, and the loop then iterates over the successive return values from calling that iterator object's `next()` method, once for each loop iteration.
 
 102. ### Explain?
 
@@ -665,6 +671,9 @@ As the above snippet reveals, the return value from an iterator's `next()` cal
 Notice the value `3` was returned with a `done:false`, which seems strange at first glance. You have to call the `next()` a fourth time (which the `for..of` loop in the previous snippet automatically does) to get `done:true` and know you're truly done iterating. The reason for this quirk is beyond the scope of what we'll discuss here, but it comes from the semantics of ES6 generator functions.
 
 103. ### `@@iterator`?
-     `@@iterator` is not the iterator object itself, but a function that returns the iterator object -- a subtle but important detail!
+
+`@@iterator` is not the iterator object itself, but a function that returns the iterator object -- a subtle but important detail!
+
 104. ### The return value from an iterator's `next()` call is what? What includes?
-     The return value from an iterator's next() call is an object of the form `{ value: .. , done: .. }`, where value is the current iteration value, and done is a boolean that indicates if there's more to iterate.
+
+The return value from an iterator's `next()` call is an object of the form `{ value: .. , done: .. }`, where value is the current iteration value, and done is a boolean that indicates if there's more to iterate.
