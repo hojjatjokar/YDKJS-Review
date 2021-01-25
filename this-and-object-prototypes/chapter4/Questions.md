@@ -1,16 +1,16 @@
 1. ### OO programming?
-   object oriented (OO) programming
+   Object oriented (OO) programming
 2. ### Is class orientation a design pattern?
-   "class orientation" as a design pattern
-3. ### Mechanics of classes?
-   mechanics of "classes": "instantiation", "inheritance" and "(relative) polymorphism".
-4. ### Class/inheritance describes what?
+   "class orientation" is a design pattern
+3. ### What are the mechanics of classes?
+   Mechanics of "classes": "instantiation", "inheritance" and "(relative) polymorphism".
+4. ### What does Class/inheritance describes?
    "Class/Inheritance" describes a certain form of code organization and architecture -- a way of modeling real world problem domains in our software.
 5. ### Class oriented programming stress what about data? example?
    OO or class oriented programming stresses that data intrinsically has associated behavior (of course, different depending on the type and nature of the data!) that operates on it, so proper design is to package up (aka, encapsulate) the data and the behavior together. This is sometimes called "data structures" in formal computer science.
 6. ### Relation between classes and data structure? (classification)
    Classes also imply a way of classifying a certain data structure. The way we do this is to think about any given structure as a specific variation of a more general base definition.
-7. ### Classification process with car example? class? inheritance? instantiation?
+7. ### What is the classification process with car example?
 
    The definition of `Vehicle` might include things like propulsion (engines, etc.), the ability to carry people, etc., which would all be the behaviors. What we define in `Vehicle` is all the stuff that is common to all (or most of) the different types of vehicles (the "planes, trains, and automobiles").
    It might not make sense in our software to re-define the basic essence of "ability to carry people" over and over again for each different type of vehicle. Instead, we define that capability once in `Vehicle`, and then when we define `Car`, we simply indicate that it "inherits" (or "extends") the base definition from `Vehicle`. The definition of `Car` is said to specialize the general `Vehicle` definition.While `Vehicle` and `Car` collectively define the behavior by way of methods, the data in an instance would be things like the unique VIN of a specific car, etc.
@@ -51,7 +51,7 @@ G. It's more useful to consider the direct relationship of a class to an object 
 
 **For example**, consider this loose pseudo-code (invented syntax) for classes:
 
-```jsx
+```javascript
 class CoolGuy {
   specialTrick = nothing;
 
@@ -67,7 +67,7 @@ class CoolGuy {
 
 To *make* a `CoolGuy` instance, we would call the class constructor:
 
-```jsx
+```javascript
 Joe = new CoolGuy("jumping rope");
 
 Joe.showOff(); // Here's my trick: jumping rope
@@ -125,18 +125,18 @@ We define the `Vehicle` class to assume an engine, a way to turn on the igniti
 So then we define two specific kinds of vehicle: `Car` and `SpeedBoat`. They each inherit the general characteristics of `Vehicle`, but then they specialize the characteristics appropriately for each kind. A car needs 4 wheels, and a speed boat needs 2 engines, which means it needs extra attention to turn on the ignition of both engines.
 
 18. ### Super class?
-    In many languages, the keyword super is used, in place of this example's inherited:, which leans on the idea that a "super class" is the parent/ancestor of the current class.
+    In many languages, the keyword `super` is used, in place of this example's inherited:, which leans on the idea that a "super class" is the parent/ancestor of the current class.
 19. ### Polymorphism? relative polymorphism?
 
     `Car` defines its own `drive()` method, which overrides the method of the same name it inherited from `Vehicle`. But then, `Car`s `drive()` method calls `inherited:drive()`, which indicates that `Car` can reference the original pre-overridden `drive()` it inherited. `SpeedBoat`s `pilot()` method also makes a reference to its inherited copy of `drive()`.
     This technique is called "polymorphism", or "virtual polymorphism". More specifically to our current point, we'll call it "relative polymorphism".
 
 20. ### In JS what is relationship between class and construction?
-    Note: Another thing that traditional class-oriented languages give you via super is a direct way for the constructor of a child class to reference the constructor of its parent class. This is largely true because with real classes, the constructor belongs to the class. However, in JS, it's the reverse -- it's actually more appropriate to think of the "class" belonging to the constructor (the Foo.prototype... type references). Since in JS the relationship between child and parent exists only between the two .prototype objects of the respective constructors, the constructors themselves are not directly related, and thus there's no simple way to relatively reference one from the other (see Appendix A for ES6 class which "solves" this with super).
+    Note: Another thing that traditional class-oriented languages give you via super is a direct way for the constructor of a child class to reference the constructor of its parent class. This is largely true because with real classes, the constructor belongs to the class. However, in JS, it's the reverse -- it's actually more appropriate to think of the "class" belonging to the constructor (the `Foo.prototype`... type references). Since in JS the relationship between child and parent exists only between the two .prototype objects of the respective constructors, the constructors themselves are not directly related, and thus there's no simple way to relatively reference one from the other.
 21. ### Multiple inheritance?
     Another aspect of polymorphism is that a method name can have multiple definitions at different levels of the inheritance chain, and these definitions are automatically selected as appropriate when resolving which methods are being called.
 22. ### Dimond problem with multiple inheritance?
-    There's another variation, the so called "Diamond Problem", which refers to the scenario where a child class "D" inherits from two parent classes ("B" and "C"), and each of those in turn inherits from a common "A" parent. If "A" provides a method drive(), and both "B" and "C" override (polymorph) that method, when D references drive(), which version should it use (B:drive() or C:drive())?
+    There's another variation, the so called "Diamond Problem", which refers to the scenario where a child class "D" inherits from two parent classes ("B" and "C"), and each of those in turn inherits from a common "A" parent. If "A" provides a method `drive()`, and both "B" and "C" override (polymorph) that method, when D references `drive()`, which version should it use (`B:drive()` or `C:drive()`)?
 23. ### Does JS have multiple inheritance?
     These complications go even much deeper than this quick glance. We address them here only so we can contrast to how JavaScript's mechanisms work. JavaScript is simpler: it does not provide a native mechanism for "multiple inheritance". Many see this as a good thing, because the complexity savings more than make up for the "reduced" functionality. But this doesn't stop developers from trying to fake it in various ways, as we'll see next.
 24. ### JS object mechanism does perform copy behavior when you inherit? or instantiate?
@@ -151,7 +151,7 @@ So then we define two specific kinds of vehicle: `Car` and `SpeedBoat`. They 
     explicit and implicit
 29. ### Explicit mixin? example?
 
-    Let's again revisit our Vehicle and Car example from before. Since JavaScript will not automatically copy behavior from Vehicle to Car, we can instead create a utility that manually copies. Such a utility is often called extend(..) by many libraries/frameworks, but we will call it mixin(..) here for illustrative purposes.
+    Let's again revisit our Vehicle and Car example from before. Since JavaScript will not automatically copy behavior from Vehicle to Car, we can instead create a utility that manually copies. Such a utility is often called `extend(..)` by many libraries/frameworks, but we will call it `mixin(..)` here for illustrative purposes.
 
     ```javascript
     // vastly simplified `mixin(..)` example:
@@ -189,7 +189,9 @@ So then we define two specific kinds of vehicle: `Car` and `SpeedBoat`. They 
 30. ### In explicit mixin, how function and object will be copied?
     Technically, functions are not actually duplicated, but rather references to the functions are copied.
 31. ### Polymorphism in explicit mixin?
+
     Because of JavaScript's peculiarities, explicit pseudo-polymorphism (because of shadowing!) creates brittle manual/explicit linkage **in every single function where you need such a (pseudo-)polymorphic reference**. This can significantly increase the maintenance cost. Moreover, while explicit pseudo-polymorphism can emulate the behavior of "multiple inheritance", it only increases the complexity and brittleness. The result of such approaches is usually more complex, harder-to-read, *and* harder-to-maintain code. **Explicit pseudo-polymorphism should be avoided wherever possible**, because the cost outweighs the benefit in most respects.
+
 32. ### Parasitic inheritance?
 
     ```javascript
