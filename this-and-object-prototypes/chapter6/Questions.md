@@ -1,21 +1,22 @@
-1. ### What is **[[prototype]]** mechanism?
+1. ### What is `[[prototype]]` mechanism?
 
-   The [[Prototype]] mechanism is an internal link that exists on one object which references another object.
+The [[Prototype]] mechanism is an internal link that exists on one object which references another object.
 
 2. ### What is "prototype chain"?
-   This linkage is exercised when a property/method reference is made against the first object, and no such property/method exists. In that case, the [[Prototype]] linkage tells the engine to look for the property/method on the linked-to object. In turn, if that object cannot fulfill the look-up, its [[Prototype]] is followed, and so on. This series of links between objects forms what is called the "prototype chain".
+
+This linkage is exercised when a property/method reference is made against the first object, and no such property/method exists. In that case, the `[[Prototype]]` linkage tells the engine to look for the property/method on the linked-to object. In turn, if that object cannot fulfill the look-up, its `[[Prototype]]` is followed, and so on. This series of links between objects forms what is called the "prototype chain".
+
 3. ### We have several similar tasks('xyz', 'ABC', etc) that we need to model in our software, Explain implementation with class and delegation.
 
-- With classes, the way you design the scenario is: define a general parent (base) class like `Task`, defining shared behavior for all the "alike" tasks. Then, you define child classes `XYZ` and `ABC`, both of which inherit from `Task`, and each of which adds specialized behavior to handle their respective tasks.
+- **With classes**, the way you design the scenario is: define a general parent (base) class like `Task`, defining shared behavior for all the "alike" tasks. Then, you define child classes `XYZ` and `ABC`, both of which inherit from `Task`, and each of which adds specialized behavior to handle their respective tasks.
 
-  **Importantly,** the class design pattern will encourage you that to get the most out of inheritance, you will want to employ method overriding (and polymorphism), where you override the definition of some general `Task` method in your `XYZ` task, perhaps even making use of `super` to call to the base version of that method while adding more behavior to it. **You'll likely find quite a few places** where you can "abstract" out general behavior to the parent class and specialize (override) it in your child classes.
+Importantly, the class design pattern will encourage you that to get the most out of inheritance, you will want to employ method overriding (and polymorphism), where you override the definition of some general `Task` method in your `XYZ` task, perhaps even making use of `super` to call to the base version of that method while adding more behavior to it. **You'll likely find quite a few places** where you can "abstract" out general behavior to the parent class and specialize (override) it in your child classes.
 
-- With delegation: You will first define an **object** called `Task`, and it will have concrete behavior on it that includes utility methods that various tasks can use. Then, for each task ("XYZ", "ABC"), you define an **object** to hold that task-specific data/behavior. You **link** your task-specific object(s) to the `Task` utility object, allowing them to delegate to it when they need to.
-  Basically, you think about performing task "XYZ" as needing behaviors from two sibling/peer objects (`XYZ` and `Task`) to accomplish it. But rather than needing to compose them together, via class copies, we can keep them in their separate objects, and we can allow `XYZ` object to **delegate to** `Task` when needed.
+- **With delegation**: You will first define an **object** called `Task`, and it will have concrete behavior on it that includes utility methods that various tasks can use. Then, for each task ("XYZ", "ABC"), you define an **object** to hold that task-specific data/behavior. You **link** your task-specific object(s) to the `Task` utility object, allowing them to delegate to it when they need to. Basically, you think about performing task "XYZ" as needing behaviors from two sibling/peer objects (`XYZ` and `Task`) to accomplish it. But rather than needing to compose them together, via class copies, we can keep them in their separate objects, and we can allow `XYZ` object to **delegate to** `Task` when needed.
 
 4. ### What's difference between class theory and OLOO with example?
 
-As compared to class-orientation, I call this style of code "OLOO" (objects-linked-to-other-objects). All we really care about is that the XYZ object delegates to the Task object (as does the ABC object). In JavaScript, the [[Prototype]] mechanism links objects to other objects. There are no abstract mechanisms like "classes", no matter how much you try to convince yourself otherwise. It's like paddling a canoe upstream: you can do it, but you're choosing to go against the natural current, so it's obviously going to be harder to get where you're going.
+As compared to class-orientation, I call this style of code "OLOO" (objects-linked-to-other-objects). All we really care about is that the XYZ object delegates to the Task object (as does the ABC object). In JavaScript, the `[[Prototype]]` mechanism links objects to other objects. There are no abstract mechanisms like "classes", no matter how much you try to convince yourself otherwise. It's like paddling a canoe upstream: you can do it, but you're choosing to go against the natural current, so it's obviously going to be harder to get where you're going.
 
 5. ### What's **Behavior Delegation** means?
 
