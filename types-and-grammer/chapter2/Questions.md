@@ -71,22 +71,170 @@ c; // "oof"
 JavaScript has just one numeric type: number. This type includes both "integer" values and fractional decimal numbers.
 9. ### The implementation of JS numbers is base on what?
 Like most modern languages, including practically all scripting languages, the implementation of JavaScript's numbers is based on the "IEEE 754" standard, often called "floating-point." JavaScript specifically uses the "double precision" format (aka "64-bit binary") of the standard.
-10. In js numbers which portions are optional ?
-11. Numbers by default output in which form? large and small numbers outputed in which form?
-12. toFixed?
-13. toPrecision?
-14. Can we use methods on literal numbers? How?
+10. ### In js numbers which portions are optional ?
+The leading portion of a decimal value, if `0`, is optional:
+
+```jsx
+var a = 0.42;
+var b = .42;
+```
+
+Similarly, the trailing portion (the fractional) of a decimal value after the `.`, if `0`, is optional:
+
+```jsx
+var a = 42.0;
+var b = 42.;
+```
+11. ### Numbers by default output in which form? large and small numbers outputed in which form?
+- 11. Which form number's output will be? large and small numbers outputed in which form?
+
+    By default, most `number`s will be outputted as base-10 decimals, with trailing fractional `0`s removed. So:
+
+    ```jsx
+    var a = 42.300;
+    var b = 42.0;
+
+    a; // 42.3
+    b; // 42
+    ```
+
+    Very large or very small `number`s will by default be outputted in exponent form, the same as the output of the `toExponential()` method, like:
+
+    ```jsx
+    var a = 5E10;
+    a;					// 50000000000
+    a.toExponential();	// "5e+10"
+
+    var b = a * a;
+    b;					// 2.5e+21
+
+    var c = 1 / a;
+    c;					// 2e-11
+    ```
+12. ### toFixed?
+The `toFixed(..)` method allows you to specify how many fractional decimal places you'd like the value to be represented with:
+
+```jsx
+var a = 42.59;
+
+a.toFixed( 0 ); // "43"
+a.toFixed( 1 ); // "42.6"
+a.toFixed( 2 ); // "42.59"
+a.toFixed( 3 ); // "42.590"
+a.toFixed( 4 ); // "42.5900"
+```
+
+Notice that the output is actually a `string` representation of the `number`, and that the value is `0`-padded on the right-hand side if you ask for more decimals than the value holds.
+13. ### toPrecision?
+`toPrecision(..)` is similar, but specifies how many *significant digits* should be used to represent the value:
+
+```jsx
+var a = 42.59;
+
+a.toPrecision( 1 ); // "4e+1"
+a.toPrecision( 2 ); // "43"
+a.toPrecision( 3 ); // "42.6"
+a.toPrecision( 4 ); // "42.59"
+a.toPrecision( 5 ); // "42.590"
+a.toPrecision( 6 ); // "42.5900"
+```
+14. ### Can we use methods on literal numbers? How?
+You don't have to use a variable with the value in it to access these methods; you can access these methods directly on `number` literals. But you have to be careful with the `.` operator. Since `.` is a valid numeric character, it will first be interpreted as part of the `number` literal, if possible, instead of being interpreted as a property accessor.
+
+```jsx
+// invalid syntax:
+42.toFixed( 3 );	// SyntaxError
+
+// these are all valid:
+(42).toFixed( 3 );	// "42.000"
+0.42.toFixed( 3 );	// "0.420"
+42..toFixed( 3 );	// "42.000"
+```
+
+`42.toFixed(3)` is invalid syntax, because the `.` is swallowed up as part of the `42.` literal (which is valid -- see above!), and so then there's no `.` property operator present to make the `.toFixed` access.
+
+`42..toFixed(3)` works because the first `.` is part of the `number` and the second `.` is the property operator. But it probably looks strange, and indeed it's very rare to see something like that in actual JavaScript code. In fact, it's pretty uncommon to access methods directly on any of the primitive values. Uncommon doesn't mean *bad* or *wrong*.
+
+This is also technically valid (notice the space):
+
+`42 .toFixed(3); // "42.000"`
+
+However, with the `number` literal specifically, **this is particularly confusing coding style** and will serve no other purpose but to confuse other developers (and your future self). Avoid it.
 15. Explain? means?
 
 ```javascript
 var a = 1e3;
 ```
 
-16. Can numbers expressed in other bases? with example?
-17. The most famous side effect of using library floating point numbers?
-18. The most commonly accepted practice for this side effect?
-19. Number.MAX_VALUE?
-20. Number.MIN.VALUE?
+`number`s can also be specified in exponent form, which is common when representing larger `number`s, such as:
+
+```jsx
+var onethousand = 1E3;						// means 1 * 10^3
+var onemilliononehundredthousand = 1.1E6;	// means 1.1 * 10^6
+```
+16. ### Can numbers expressed in other bases? with example?
+`number` literals can also be expressed in other bases, like binary, octal, and hexadecimal.
+
+These formats work in current versions of JavaScript:
+
+```jsx
+0xf3; // hexadecimal for: 243
+0Xf3; // ditto
+
+0363; // octal for: 243
+```
+
+**Note:** Starting with ES6 + `strict` mode, the `0363` form of octal literals is no longer allowed (see below for the new form). The `0363` form is still allowed in non-`strict` mode, but you should stop using it anyway, to be future-friendly (and because you should be using `strict` mode by now!).
+
+As of ES6, the following new forms are also valid:
+
+```jsx
+0o363;		// octal for: 243
+0O363;		// ditto
+
+0b11110011;	// binary for: 243
+0B11110011; // ditto
+```
+
+Please do your fellow developers a favor: never use the `0O363` form. `0` next to capital `O` is just asking for confusion. Always use the lowercase predicates `0x`, `0b`, and `0o`.
+17. ### The most famous side effect of using library floating point numbers?
+The most (in)famous side effect of using binary floating-point numbers (which, remember, is true of **all** languages that use IEEE 754 -- not *just* JavaScript as many assume/pretend) is:
+
+```jsx
+0.1 + 0.2 === 0.3; // false
+```
+
+Mathematically, we know that statement should be `true`. Why is it `false`?
+
+Simply put, the representations for `0.1` and `0.2` in binary floating-point are not exact, so when they are added, the result is not exactly `0.3`. It's **really** close: `0.30000000000000004`, but if your comparison fails, "close" is irrelevant.
+18. ### The most commonly accepted practice for this side effect?
+The most commonly accepted practice is to use a tiny "rounding error" value as the *tolerance* for comparison. This tiny value is often called "machine epsilon," which is commonly `2^-52` (`2.220446049250313e-16`) for the kind of `number`s in JavaScript.
+
+As of ES6, `Number.EPSILON` is predefined with this tolerance value, so you'd want to use it, but you can safely polyfill the definition for pre-ES6:
+
+```jsx
+if (!Number.EPSILON) {
+	Number.EPSILON = Math.pow(2,-52);
+}
+```
+
+We can use this `Number.EPSILON` to compare two `number`s for "equality" (within the rounding error tolerance):
+
+```jsx
+function numbersCloseEnoughToEqual(n1,n2) {
+	return Math.abs( n1 - n2 ) < Number.EPSILON;
+}
+
+var a = 0.1 + 0.2;
+var b = 0.3;
+
+numbersCloseEnoughToEqual( a, b );					// true
+numbersCloseEnoughToEqual( 0.0000001, 0.0000002 );	// false
+```
+19. ### Number.MAX_VALUE?
+The maximum floating-point value that can be represented is roughly 1.798e+308 (which is really, really, really huge!), predefined for you as Number.MAX_VALUE.
+20. ### Number.MIN.VALUE?
+On the small end, Number.MIN_VALUE is roughly 5e-324, which isn't negative but is really close to zero!
 21. Number.MAX_SAFE_INTEGER
 22. Number.MIN_SAFE_INTEGER
 23. 32-Bit Integers? why? what's range?
