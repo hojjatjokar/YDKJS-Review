@@ -38,3 +38,44 @@ The most common tools for parallel computing are processes and threads. Processe
 ## 8. How event loop works due to serialism or parallelism?
 
 An event loop, by contrast, breaks its work into tasks and executes them in serial, disallowing parallel access and changes to shared memory. Parallelism and "serialism" can coexist in the form of cooperating event loops in separate threads.
+
+## 9. How threaded programming can be tricky?
+
+if you don't take special steps to prevent this kind of interruption/interleaving from happening, you can get very surprising, nondeterministic behavior that frequently leads to headaches.
+
+## 10. Does JS share data between threads?
+
+No
+
+## 11. Whats run-to-completion?
+
+Because of JavaScript's single-threading, the code inside of `foo()` (and `bar()`) is atomic, which means that once `foo()` starts running, the entirety of its code will finish before any of the code in `bar()` can run, or vice versa. This is called "run-to-completion" behavior.
+
+## 12. According to this code explain this situations:
+
+```jsx
+var a = 1;
+var b = 2;
+
+function foo() {
+  a++;
+  b = b * a;
+  a = b + 3;
+}
+
+function bar() {
+  b--;
+  a = 8 + b;
+  b = a * 2;
+}
+
+// ajax(..) is some arbitrary Ajax function given by a library
+ajax("http://some.url.1", foo);
+ajax("http://some.url.2", bar);
+```
+
+a. There are 3 chunks of code which of them are sync or async?
+
+b. What result can be possibles ? ( how _deterministic_ can they be)
+
+c. Can foo and bar interrupt each other?
