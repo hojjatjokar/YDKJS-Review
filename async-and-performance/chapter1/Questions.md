@@ -79,3 +79,35 @@ a. There are 3 chunks of code which of them are sync or async?
 b. What result can be possibles ? ( how _deterministic_ can they be)
 
 c. Can foo and bar interrupt each other?
+
+## 13. What's race condition?
+
+"race condition," as `foo()` and `bar()` are racing against each other to see which runs first. Specifically, it's a "race condition" because you cannot predict reliably how `a` and `b` will turn out.
+
+When two function are racing against each other to see which runs first. Specifically, it's a race condition because you cannot predict reliably how the result will be
+
+## 14. What's concurrency?
+
+Concurrency is when two or more "processes" are executing simultaneously over the same period, regardless of whether their individual constituent operations happen in parallel (at the same instant on separate processors or cores) or not. You can think of concurrency then as "process"-level (or task-level) parallelism, as opposed to operation-level parallelism (separate-processor threads).
+
+## 15. What's cooperative concurrency?
+
+Here, the focus isn't so much on interacting via value sharing in scopes (though that's obviously still allowed!). The goal is to take a long-running "process" and break it up into steps or batches so that other concurrent "processes" have a chance to interleave their operations into the event loop queue.
+
+## 16. What `setTimeout(..0)` does?
+
+means "stick this function at the end of the current event loop queue."
+
+**Note:** `setTimeout(..0)` is not technically inserting an item directly onto the event loop queue. The timer will insert the event at its next opportunity. For example, two subsequent `setTimeout(..0)` calls would not be strictly guaranteed to be processed in call order, so it *is* possible to see various conditions like timer drift where the ordering of such events isn't predictable. In Node.js, a similar approach is `process.nextTick(..)`. Despite how convenient (and usually more performant) it would be, there's not a single direct way (at least yet) across all environments to ensure async event ordering.
+
+## 17. What is job (queue)?
+
+So, the best way to think about this that I've found is that the "Job queue" is a queue hanging off the end of every tick in the event loop queue. Certain async-implied actions that may occur during a tick of the event loop will not cause a whole new event to be added to the event loop queue, but will instead add an item (aka Job) to the end of the current tick's Job queue.
+
+It's kinda like saying, "oh, here's this other thing I need to do *later*, but make sure it happens right away before anything else can happen."
+
+Or, to use a metaphor: the event loop queue is like an amusement park ride, where once you finish the ride, you have to go to the back of the line to ride again. But the Job queue is like finishing the ride, but then cutting in line and getting right back on.
+
+## 18. compiler statement reordering? and why is that?
+
+But it's *possible* that the JS engine, after compiling this code (yes, JS is compiled -- see the *Scope & Closures* title of this book series!) might find opportunities to run your code faster by rearranging (safely) the order of these statements. Essentially, as long as you can't observe the reordering, anything's fair game.
