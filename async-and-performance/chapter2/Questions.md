@@ -72,3 +72,21 @@ We've got a chain of three functions nested together, each one representing a st
 This kind of code is often called "callback hell," and sometimes also referred to as the "pyramid of doom".
 
 But "callback hell" actually has almost nothing to do with the nesting/indentation. It's a far deeper problem than that.
+
+## 7. What's inversion of control?
+
+```jsx
+// A
+ajax( "..", function(..){
+// C
+} );
+// B
+```
+
+`// A` and `// B` happen *now*, under the direct control of the main JS program. But `// C` gets deferred to happen *later*, and under the control of another party -- in this case, the `ajax(..)` function. In a basic sense, that sort of hand-off of control doesn't regularly cause lots of problems for programs.
+
+We call this "inversion of control," when you take part of your program and give over control of its execution to another third party. There's an unspoken "contract" that exists between your code and the third-party utility -- a set of things you expect to be maintained.
+
+## 8. What's the trust issue of callbacks?
+
+Inversion of control is one of the worst problems about callback-driven design. It revolves around the idea that sometimes `ajax(..)` (i.e., the "party" you hand your callback continuation to) is not a function that you wrote, or that you directly control. Many times, it's a utility provided by some third party.
